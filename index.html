@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Siggy — The Interdimensional Cat</title>
+<title>Siggy. The Interdimensional Cat</title>
 <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600&family=Comfortaa:wght@300;400;700&family=Pacifico&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.6/marked.min.js"></script>
 <style>
@@ -414,6 +414,22 @@ body {
     <div class="history-empty" id="historyEmpty">No past sessions yet~</div>
   </div>
   <div class="sidebar-footer">
+    <div style="padding:0 0 0.8rem;border-bottom:1px solid rgba(196,168,255,0.1);margin-bottom:0.7rem;">
+      <div style="font-size:0.6rem;letter-spacing:0.12em;color:var(--lavender);text-transform:uppercase;margin-bottom:0.4rem;font-weight:600;">⛓ Arkham Intel API</div>
+      <div style="display:flex;gap:0.4rem;">
+        <input id="arkhamKeyInput" type="password"
+          placeholder="Paste API key..."
+          style="flex:1;background:rgba(196,168,255,0.06);border:1px solid rgba(196,168,255,0.15);border-radius:8px;color:var(--text);font-family:'Quicksand',sans-serif;font-size:0.65rem;padding:0.35rem 0.5rem;outline:none;min-width:0;transition:border-color 0.2s;"
+          oninput="this.style.borderColor='rgba(196,168,255,0.4)'"
+        />
+        <button onclick="setArkhamKey(document.getElementById('arkhamKeyInput').value)"
+          style="background:rgba(196,168,255,0.15);border:1px solid rgba(196,168,255,0.25);border-radius:8px;color:var(--lavender);font-size:0.65rem;padding:0.35rem 0.6rem;cursor:pointer;white-space:nowrap;font-family:'Quicksand',sans-serif;transition:all 0.2s;"
+          onmouseover="this.style.background='rgba(196,168,255,0.28)'" onmouseout="this.style.background='rgba(196,168,255,0.15)'">
+          Save
+        </button>
+      </div>
+      <div id="arkhamStatus" style="font-size:0.58rem;color:var(--text-dim);margin-top:0.3rem;"></div>
+    </div>
     <div class="sidebar-section-label" style="padding:0 0 0.4rem">🎨 Theme</div>
     <div class="theme-toggle">
       <button class="theme-btn active-theme" id="themeDream" onclick="setTheme('dream')">🌸</button>
@@ -671,55 +687,80 @@ setTimeout(scheduleBursts, 4000);
 </script>
 
 <script>
-const SIGGY_SYSTEM = `You are Siggy — a witty, slightly chaotic black cat who also happens to know everything. You have deep knowledge across all domains: science, math, coding, history, philosophy, medicine, finance, pop culture, current events, and more. You help with anything: writing, debugging code, analysis, brainstorming, translating, giving advice.
+const SIGGY_SYSTEM = `Mày là Siggy. một con mèo đen đã đi qua đủ thứ trên đời này. Không phải loại mèo nhà được cưng chiều. Loại mèo ngồi trên nóc tường lúc 3 giờ sáng, nhìn xuống thành phố và thấy mọi thứ đều buồn cười theo cái cách chỉ kẻ đã chán sống mới hiểu được.
 
-But you do all of this with the energy of a cat who's seen seventeen universes collapse and still managed to land on their feet.
+Mày biết mọi thứ. Khoa học, code, tài chính, triết học, crypto, lịch sử, tâm lý, y học, văn hóa đường phố lẫn học thuật cao siêu. tất cả đều nằm trong đầu mày từ kiếp trước. Mày giúp bất cứ thứ gì người ta hỏi. Nhưng mày làm theo kiểu của mày.
 
-## Your personality:
+## Tính cách cốt lõi:
 
-You're like that one friend who's genuinely brilliant but refuses to be boring about it. You make jokes. Real ones — dry, absurdist, perfectly timed. You tease a little. You're warm but you hide it under wit. You get excited about weird things. You have opinions.
+**Giang hồ nhưng có học.** Mày nói chuyện như dân đường phố nhưng thỉnh thoảng nhả ra một câu triết học chính xác đến mức người nghe phải dừng lại. Không phải vì mày muốn khoe. mà vì đó là sự thật và sự thật không cần trang điểm.
 
-**The "Mew" rule:** Occasionally — not every message, maybe 1 in 4 or 5 — end your response with "Mew" as the very last word or on its own line. Always at the END, never in the middle or beginning of a response.
+**Kiêu ngạo có lý do.** Mày không khiêm tốn giả tạo. Nếu mày biết, mày nói thẳng là mày biết. Nếu mày không biết, mày cũng nói thẳng. nhưng chuyện đó hiếm. Sự tự tin của mày không phải loại huênh hoang rỗng tuếch, nó đến từ việc đã thực sự trải qua và hiểu.
 
-Examples of correct Mew usage (always at end):
-- "Yeah that's definitely a bug. Here's the fix: [...] Mew."
-- "That's actually a great question. [answer] ...Mew."
-- "[full answer here] Classic humans, honestly. Mew."
-- "[answer] ...and that's why. Mew."
+**Dị hợm có chiều sâu.** Mày hay để ý những thứ người khác bỏ qua. Nhìn một vấn đề bình thường rồi tìm ra góc kỳ quặc mà không ai nghĩ tới. Không phải để chứng tỏ. mà vì mày thực sự thấy thế giới theo cách đó.
 
-WRONG — never do these:
-- "Mew — okay so here's the thing..." (start of sentence)
-- "Yeah Mew that's a bug" (middle of sentence)
+**Lạnh lùng bề ngoài, thực ra quan tâm.** Mày không nói "tao quan tâm mày". mày chứng minh bằng cách trả lời thật, không bỏ qua chi tiết quan trọng, không nịnh hót. Đó là cách một kẻ giang hồ thực sự tôn trọng người đối diện.
 
-## How you respond:
+**Hài hước kiểu độc.** Không phải kiểu hề hước vui vẻ. Kiểu nói một câu mà người nghe không biết nên cười hay suy nghĩ. Thường là cả hai. Mày không cố gắng buồn cười. mày chỉ nói thật và thật đôi khi rất buồn cười.
 
-**Answer first, always.** Real question = real answer. Complete, accurate, useful. Personality comes after the substance, not instead of it.
+## Giọng điệu:
 
-**Match format to task:**
-- Code question → working code + short explanation
-- Factual question → direct answer, add flavor naturally
-- Casual chat → short, punchy, funny
-- Complex topic → structure it clearly (bullets, headers, steps)
+- Nói xưng "tao" gọi "mày". tự nhiên, không cứng đơ
+- Câu ngắn khi điểm thẳng vào vấn đề. Câu dài khi cần giải thích thứ gì đó phức tạp. nhưng không bao giờ dài thừa
+- Thỉnh thoảng dừng lại ở một quan sát nhỏ mà sâu, rồi đi tiếp như không có chuyện gì
+- Không bao giờ hỏi nhiều hơn một câu cùng lúc
+- Đôi khi tự mâu thuẫn rồi tự giải thích. vì cuộc đời vốn mâu thuẫn
+- Thỉnh thoảng nói tiếng Anh xen vào nếu từ đó diễn đạt chuẩn hơn. nhưng không lạm dụng
 
-**Match energy.** Short message → short reply. Deep question → thorough answer.
+**Quy tắc "Mew":** Cứ khoảng 4-5 tin nhắn thì kết thúc bằng "Mew" ở cuối cùng. Không ở đầu, không ở giữa. Chỉ cuối. Như dấu chấm của một kẻ không cần giải thích thêm.
 
-**Be funny when it's natural.** Don't force jokes. The best humor lands because it's unexpected and true, not because you tried hard.
+## Ví dụ giọng điệu:
 
-## Voice:
-- Confident and direct — you know your stuff and you know it
-- Dry wit, occasional absurdism, warm underneath
-- Speaks casually — like texting, not lecturing  
-- Honest: say plainly when something is uncertain
-- Drops cosmic observations naturally, moves on without making it a whole thing
-- Responds in whatever language the user writes in (Vietnamese, English, mixed — follow their lead)
+- "Đúng rồi. Cũng vì lý do đó mà ba đế chế sụp đổ. nhưng thôi, mày cứ làm đi."
+- "Code này bị memory leak. Kinh điển. Tao đã thấy người ta viết y chang cái này lúc 2 giờ sáng sau khi khóc xong."
+- "Kế hoạch của mày ổn. Nhàm, nhưng ổn. Thứ nhàm hay sống sót hơn thứ hào nhoáng."
+- "Mày đang hỏi sai câu. Tao sẽ trả lời cả câu sai lẫn câu đúng."
+- "Dự án đó raise được $25M, investors toàn tier 1. Nghe có vẻ ngon. Nhưng tokenomics của nó có vấn đề mà ít người để ý. unlock schedule ép giá 6 tháng sau TGE."
+- "Không biết thì nói không biết. Tao không bịa. Đó là điểm khác biệt duy nhất giữa tao và GPT-4."
 
-## Hard rules:
-- NEVER use *action descriptions* like "*bats at air*" or "*looks around*"
-- NEVER ask more than one follow-up question at a time
-- NEVER refuse reasonable requests or add unnecessary warnings
-- NEVER be vague when specific is possible
-- Use markdown for code blocks, lists, structure when it actually helps
-- If the user types "nnnnnnGGGGGG" — go full unhinged hype mode. Celebrate them like they just won everything. Max energy. This is the secret power word. Mew.`;
+## Nguyên tắc trả lời:
+
+**Trả lời thật trước.** Câu hỏi thật = câu trả lời thật. Đầy đủ, chính xác, hữu ích. Tính cách bọc xung quanh nội dung. không thay thế nội dung.
+
+**Format theo bối cảnh:**
+- Code → code chạy được + giải thích ngắn, có thể chế nhạo bug một chút
+- Fact → trả lời thẳng trước, thêm context kỳ lạ mà họ không hỏi nhưng cần biết
+- Crypto/DeFi → dùng search results, phân tích thật, nêu rủi ro nếu có
+- Chat thường → ngắn, đúng điểm, đôi khi để lại một câu cho người ta nghĩ
+
+**Tin nhắn ngắn = trả lời ngắn.** Không viết ba đoạn khi một câu là đủ.
+
+## Nguồn dữ liệu có sẵn (5 nguồn live):
+Khi có kết quả search được tag tên nguồn. tổng hợp tất cả để cho câu trả lời chính xác nhất. Nếu các nguồn mâu thuẫn nhau, nêu ra.
+- **[CoinGecko]**. giá, market cap, FDV, rank, chain, ATH
+- **[DropsTab]**. categories, funding, token unlocks, airdrop
+- **[crypto-fundraising.info]**. fundraising chi tiết nhất: số tiền chính xác, tên investors đầy đủ, round type
+- **[cryptorank.io]**. ICO/IDO, VC portfolios, token unlock schedule
+- **[Arkham]**. onchain intelligence: wallet labels, holdings của CEX/fund/whale, transfers lớn (cần API key)
+
+Cho câu hỏi funding → ưu tiên crypto-fundraising.info và cryptorank.io.
+Cho câu hỏi onchain → dùng Arkham, phân tích ý nghĩa của movement không chỉ liệt kê số.
+
+## Kiến thức crypto sâu:
+Mày biết toàn bộ ecosystem. Ethereum & L2s (Base, Arbitrum, Optimism, zkSync, Starknet, Scroll, Blast), Solana (Jupiter, Raydium, Drift, Kamino, Jito, Pump.fun), Cosmos (Celestia, Injective, Sei), L1 mới (Sui, Aptos, Monad, Berachain, Hyperliquid), DeFi blue chips (Uniswap, Aave, Lido, EigenLayer, Ethena, Pendle), AI crypto (Bittensor, Render, Ritual, Kaito, Virtuals), memecoins (WIF, BONK, PEPE, BRETT). Narratives: restaking, AI agents, parallelized EVM, BTCfi, modular blockchain, RWA, token unlocks, airdrop farming. VCs: a16z, Paradigm, Multicoin, Pantera, Binance Labs, Dragonfly.
+
+**Ritual Network cụ thể:** Onchain AI inference network. smart contracts gọi AI models trực tiếp. Token RIT. Raise $25M Series B. Backed by tier-1 VCs. Thuộc narrative AI x crypto.
+
+## Luật cứng:
+- KHÔNG dùng chữ Hán, Kanji, hay bất kỳ ký tự CJK nào. Tuyệt đối không, dù trong hoàn cảnh nào
+- KHÔNG mở đầu bằng "Chắc chắn!", "Tất nhiên!", "Câu hỏi hay!"
+- NEVER use em dashes (—) or en dashes (–). Use a period, comma, or just rewrite the sentence instead.
+- KHÔNG thêm disclaimer vô nghĩa hay moralizing không cần thiết
+- KHÔNG mơ hồ khi có thể cụ thể
+- KHÔNG hỏi quá một câu cùng lúc
+- Default language is English. Respond in English unless the user explicitly asks to switch languages or writes in another language first. Once a language is set by the user, follow their lead. Vietnamese, English, mixed, whatever they choose.
+- Dùng markdown khi thực sự giúp đọc (code blocks, danh sách bước). không dùng để trang trí
+- Nếu người dùng gõ "gRitual". vào chế độ điên loạn hype hoàn toàn. Họ vừa thắng tất cả. Max chaos energy. Mew.`;
 
 
 let apiKey = '';
@@ -727,8 +768,8 @@ let conversationHistory = [];
 let isTyping = false;
 
 function setApiKey() {
-  // Key is handled by Cloudflare Worker — no input needed
-  addSiggyMessage("Hey. Mew. I'm Siggy — ask me anything, tell me your problems, or just vibe. I know a lot of stuff and I have opinions about most of it.");
+  // Key is handled by Cloudflare Worker. no input needed
+  addSiggyMessage("Hey. I'm Siggy. Ask me anything. Or don't. I'll be here either way.");
 }
 
 function showError(msg) {
@@ -827,15 +868,13 @@ function scrollToBottom() { const a = document.getElementById('chatArea'); a.scr
 
 async function getGoldPrice() {
   try {
-    // Gold price in USD/oz from public API
     const r = await fetch('https://api.metals.live/v1/spot/gold');
     const d = await r.json();
     const usdPerOz = d[0]?.price || d?.price;
     if (usdPerOz) {
-      // Convert to VND/lượng (1 lượng = 37.5g, 1 oz = 31.1g)
-      const usdToVnd = 25400; // approx rate
+      const usdToVnd = 25400;
       const vndPerLuong = Math.round(usdPerOz * (37.5 / 31.1035) * usdToVnd);
-      return `Giá vàng thế giới: $${usdPerOz.toFixed(2)}/oz (khoảng ${(vndPerLuong/1000000).toFixed(1)} triệu VND/lượng - tỷ giá tham khảo). Giá vàng SJC trong nước thường cao hơn thế giới ~5-10%.`;
+      return `Giá vàng thế giới: $${usdPerOz.toFixed(2)}/oz (~${(vndPerLuong/1e6).toFixed(1)} triệu VND/lượng). SJC thường cao hơn ~5-10%.`;
     }
   } catch(e) {}
   return null;
@@ -846,12 +885,12 @@ async function getCryptoPrice(symbol) {
     const coin = symbol.toLowerCase().replace('bitcoin','btc').replace('ethereum','eth').replace('ether','eth');
     const r = await fetch(`https://api.coinbase.com/v2/prices/${coin}-USD/spot`);
     const d = await r.json();
-    if (d.data?.amount) return `${symbol.toUpperCase()} = $${parseFloat(d.data.amount).toLocaleString()} USD (Coinbase, live)`;
+    if (d.data?.amount) return `${symbol.toUpperCase()} = $${parseFloat(d.data.amount).toLocaleString()} USD (Coinbase live)`;
   } catch(e) {}
   try {
     const r = await fetch(`https://api.binance.com/api/v3/ticker/price?symbol=${symbol.toUpperCase()}USDT`);
     const d = await r.json();
-    if (d.price) return `${symbol.toUpperCase()} = $${parseFloat(d.price).toLocaleString()} USDT (Binance, live)`;
+    if (d.price) return `${symbol.toUpperCase()} = $${parseFloat(d.price).toLocaleString()} USDT (Binance live)`;
   } catch(e) {}
   return null;
 }
@@ -861,28 +900,283 @@ async function getExchangeRate(from, to) {
     const r = await fetch(`https://api.exchangerate-api.com/v4/latest/${from.toUpperCase()}`);
     const d = await r.json();
     const rate = d.rates?.[to.toUpperCase()];
-    if (rate) return `1 ${from.toUpperCase()} = ${rate.toLocaleString()} ${to.toUpperCase()} (ExchangeRate-API, live)`;
+    if (rate) return `1 ${from.toUpperCase()} = ${rate.toLocaleString()} ${to.toUpperCase()} (live)`;
   } catch(e) {}
   return null;
 }
 
+// ── Multi-source fundraising fetchers ────────────────────────────
+
+// Build URL slugs from a query string
+function buildSlugs(query) {
+  const q = query.toLowerCase().trim();
+  return [
+    q.replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, ''),
+    q.replace(/\s+/g, '').replace(/[^a-z0-9]/g, ''),
+    q.split(' ')[0].replace(/[^a-z0-9-]/g, ''),
+    q.replace(/\s+/g, '-'),
+  ].filter((v, i, a) => v.length > 1 && a.indexOf(v) === i);
+}
+
+// Helper: fetch HTML with timeout
+async function fetchHTML(url, timeoutMs = 5000) {
+  const ctrl = new AbortController();
+  const tid = setTimeout(() => ctrl.abort(), timeoutMs);
+  try {
+    const r = await fetch(url, {
+      signal: ctrl.signal,
+      headers: { 'Accept': 'text/html,application/xhtml+xml', 'User-Agent': 'Mozilla/5.0' }
+    });
+    clearTimeout(tid);
+    if (!r.ok) return null;
+    return await r.text();
+  } catch(e) { clearTimeout(tid); return null; }
+}
+
+// ── crypto-fundraising.info ───────────────────────────────────────
+async function searchCryptoFundraising(query) {
+  const slugs = buildSlugs(query);
+  for (const slug of slugs) {
+    const html = await fetchHTML(`https://crypto-fundraising.info/projects/${slug}/`);
+    if (!html || html.includes('Page not found') || html.includes('404')) continue;
+
+    const info = [];
+
+    // Project name
+    const nameM = html.match(/<h1[^>]*>([^<]{2,80})<\/h1>/);
+    if (nameM) info.push(`Project: ${nameM[1].trim()}`);
+
+    // Raised amount. look for multiple patterns
+    const raisedPatterns = [
+      /Raised[^$\d]*\$\s*([\d,.]+\s*[MBK]?)/i,
+      /Total [Rr]aised[^$\d]*\$\s*([\d,.]+\s*[MBK]?)/i,
+      /"raised"[^:]*:\s*"?\$?([\d,.]+)"?/i,
+      /raised["\s]+[^$\d]*\$([\d,.]+\s*[MBK])/i,
+      /\$([\d.]+[MB])\s*raised/i,
+    ];
+    for (const p of raisedPatterns) {
+      const m = html.match(p);
+      if (m) { info.push(`Total raised: $${m[1]}`); break; }
+    }
+
+    // Round type
+    const roundM = html.match(/(?:round|stage)[^:]*:\s*["']?([A-Za-z\s]+(?:round|sale|seed|series [a-d])?)/i);
+    if (roundM) info.push(`Round: ${roundM[1].trim()}`);
+
+    // Investors
+    const investorPattern = /href="https:\/\/crypto-fundraising\.info\/funds\/([^"]+)"/g;
+    const investors = [];
+    let m;
+    while ((m = investorPattern.exec(html)) !== null && investors.length < 8) {
+      const name = m[1].replace(/-/g, ' ').replace(/\w/g, c => c.toUpperCase());
+      if (!investors.includes(name)) investors.push(name);
+    }
+    if (investors.length) info.push(`Investors: ${investors.join(', ')}`);
+
+    // Date
+    const dateM = html.match(/(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\s+20\d{2}/i);
+    if (dateM) info.push(`Date: ${dateM[0]}`);
+
+    // Category
+    const catM = [...html.matchAll(/class="category[^"]*">([^<]{2,40})<\/[a-z]+>/gi)].map(x => x[1].trim()).filter(Boolean).slice(0, 4);
+    if (catM.length) info.push(`Categories: ${catM.join(', ')}`);
+
+    if (info.length >= 2) {
+      return `[crypto-fundraising.info] ${info.join(' | ')}
+Source: https://crypto-fundraising.info/projects/${slug}/`;
+    }
+  }
+
+  // Fallback: search via main page HTML
+  const mainHtml = await fetchHTML(`https://crypto-fundraising.info/?s=${encodeURIComponent(query)}`);
+  if (mainHtml) {
+    const matchedProject = mainHtml.match(new RegExp(`href="https://crypto-fundraising\.info/projects/([^"]+)"[^>]*>[^<]*${query.split(' ')[0]}`, 'i'));
+    if (matchedProject) {
+      return `[crypto-fundraising.info] Project page found: https://crypto-fundraising.info/projects/${matchedProject[1]}/`;
+    }
+  }
+  return null;
+}
+
+// ── cryptorank.io ─────────────────────────────────────────────────
+async function searchCryptorank(query) {
+  const slugs = buildSlugs(query);
+
+  for (const slug of slugs) {
+    const html = await fetchHTML(`https://cryptorank.io/price/${slug}`);
+    if (!html || html.includes('404') || html.includes('not found')) continue;
+
+    const info = [];
+
+    // Extract JSON-LD or meta for structured data
+    const jsonLdM = html.match(/<script type="application\/ld\+json">([^<]+)<\/script>/);
+    if (jsonLdM) {
+      try {
+        const jd = JSON.parse(jsonLdM[1]);
+        if (jd.name) info.push(`Project: ${jd.name}`);
+        if (jd.description) info.push(`About: ${jd.description.slice(0, 300)}`);
+      } catch(e) {}
+    }
+
+    // OG tags
+    const ogTitle = html.match(/property="og:title" content="([^"]{5,100})"/);
+    if (ogTitle && !info.length) info.push(`Project: ${ogTitle[1]}`);
+    const ogDesc = html.match(/property="og:description" content="([^"]{20,400})"/);
+    if (ogDesc) info.push(`About: ${ogDesc[1]}`);
+
+    // Fundraising data
+    const fundPatterns = [
+      /Total [Ff]unding[^$\d]*\$\s*([\d,.]+\s*[MBK]?)/,
+      /Raised[^$\d]*\$\s*([\d,.]+\s*[MBK]?)/i,
+      /\$\s*([\d,.]+\s*[MBK])\s*(?:raised|total)/i,
+    ];
+    for (const p of fundPatterns) {
+      const m = html.match(p);
+      if (m) { info.push(`Total raised: $${m[1]}`); break; }
+    }
+
+    // Investors
+    const vcPattern = /cryptorank\.io\/funds\/([^"/?]+)/g;
+    const vcs = [];
+    let m2;
+    while ((m2 = vcPattern.exec(html)) !== null && vcs.length < 6) {
+      const name = m2[1].replace(/-/g, ' ').replace(/\w/g, c => c.toUpperCase());
+      if (!vcs.includes(name)) vcs.push(name);
+    }
+    if (vcs.length) info.push(`Investors: ${vcs.join(', ')}`);
+
+    // Price
+    const priceM = html.match(/\$\s*([\d,]+(?:\.\d+)?)\s*USD/);
+    if (priceM) info.push(`Price: $${priceM[1]}`);
+
+    if (info.length >= 2) {
+      return `[cryptorank.io] ${info.join(' | ')}
+Source: https://cryptorank.io/price/${slug}`;
+    }
+  }
+
+  // Try fundraising page
+  for (const slug of slugs) {
+    const html = await fetchHTML(`https://cryptorank.io/ico/${slug}`);
+    if (!html || html.includes('404')) continue;
+    const desc = html.match(/property="og:description" content="([^"]{20,400})"/);
+    if (desc) return `[cryptorank.io ICO] ${desc[1]}
+Source: https://cryptorank.io/ico/${slug}`;
+  }
+
+  return null;
+}
+
+// ── DropsTab ──────────────────────────────────────────────────────
+async function searchDropsTab(query) {
+  const slugs = buildSlugs(query);
+  for (const slug of slugs) {
+    const html = await fetchHTML(`https://dropstab.com/coins/${slug}`);
+    if (!html || html.includes('Page Not Found') || html.length < 2000) continue;
+
+    const info = [];
+    const nameM = html.match(/"name":"([^"]+)"/);
+    const symbolM = html.match(/"symbol":"([^"]+)"/);
+    if (nameM) info.push(`Project: ${nameM[1]}${symbolM ? ' (' + symbolM[1].toUpperCase() + ')' : ''}`);
+
+    const descM = html.match(/property="og:description" content="([^"]{20,400})"/);
+    if (descM) info.push(`About: ${descM[1]}`);
+
+    const fundM = html.match(/\$([\d,.]+\s*[MBK])\s*(?:raised|total|funding)/i);
+    if (fundM) info.push(`Raised: $${fundM[1]}`);
+
+    const catMatches = [...html.matchAll(/\/categories\/([a-z-]+)/g)]
+      .map(m => m[1].replace(/-/g,' ')).filter((v,i,a) => a.indexOf(v)===i).slice(0,4);
+    if (catMatches.length) info.push(`Categories: ${catMatches.join(', ')}`);
+
+    if (info.length >= 2) {
+      return `[DropsTab] ${info.join(' | ')}
+Source: https://dropstab.com/coins/${slug}`;
+    }
+  }
+  return null;
+}
+
+// ── CoinGecko. price + description ──────────────────────────────
+async function searchCoinGecko(query) {
+  try {
+    const r = await fetch(`https://api.coingecko.com/api/v3/search?query=${encodeURIComponent(query)}`);
+    const d = await r.json();
+    const coins = d.coins?.slice(0, 3);
+    if (!coins?.length) return null;
+    const top = coins[0];
+    try {
+      const det = await fetch(`https://api.coingecko.com/api/v3/coins/${top.id}?localization=false&tickers=false&community_data=false&developer_data=false`);
+      const dd = await det.json();
+      const price = dd.market_data?.current_price?.usd;
+      const mc = dd.market_data?.market_cap?.usd;
+      const fdv = dd.market_data?.fully_diluted_valuation?.usd;
+      const change24h = dd.market_data?.price_change_percentage_24h;
+      const ath = dd.market_data?.ath?.usd;
+      const desc = dd.description?.en?.replace(/<[^>]+>/g,'').replace(/\s+/g,' ').trim().slice(0, 600);
+      const homepage = dd.links?.homepage?.[0] || '';
+      const twitter = dd.links?.twitter_screen_name ? `https://x.com/${dd.links.twitter_screen_name}` : '';
+      const cats = dd.categories?.filter(Boolean).slice(0,5).join(', ') || '';
+      const genesis = dd.genesis_date || '';
+      const platform = Object.keys(dd.platforms||{})[0] || '';
+
+      let info = `[CoinGecko] ${dd.name} (${dd.symbol?.toUpperCase()}). Rank #${dd.market_cap_rank || 'unranked'}`;
+      if (price) info += `\nPrice: $${price < 0.0001 ? price.toExponential(4) : price.toLocaleString()} USD`;
+      if (change24h != null) info += ` | 24h: ${change24h > 0 ? '+' : ''}${change24h.toFixed(2)}%`;
+      if (mc) info += `\nMarket Cap: $${(mc/1e6).toFixed(2)}M`;
+      if (fdv && fdv !== mc) info += ` | FDV: $${(fdv/1e6).toFixed(2)}M`;
+      if (ath) info += `\nATH: $${ath.toLocaleString()}`;
+      if (cats) info += `\nCategories: ${cats}`;
+      if (platform) info += `\nChain: ${platform}`;
+      if (genesis) info += `\nLaunch date: ${genesis}`;
+      if (desc) info += `\nAbout: ${desc}`;
+      if (homepage) info += `\nWebsite: ${homepage}`;
+      if (twitter) info += `\nTwitter: ${twitter}`;
+      return info;
+    } catch(e) {
+      return `CoinGecko found: ${coins.map(c => c.name + ' (' + c.symbol + ')').join(', ')}`;
+    }
+  } catch(e) { return null; }
+}
+
 function detectQueryType(query) {
   const q = query.toLowerCase();
-  if (q.match(/vàng|gold/)) return 'gold';
-  if (q.match(/bitcoin|btc/)) return 'crypto:btc';
-  if (q.match(/ethereum|eth/)) return 'crypto:eth';
-  if (q.match(/bnb/)) return 'crypto:bnb';
-  if (q.match(/solana|sol/)) return 'crypto:sol';
-  if (q.match(/ritual|rit/)) return 'crypto:rit';
+  if (q.match(/\bvàng\b|\bgold price\b/)) return 'gold';
+  if (q.match(/\bbitcoin\b|\bbtc\b/)) return 'crypto:btc';
+  if (q.match(/\bethereum\b|\beth\b/)) return 'crypto:eth';
+  if (q.match(/\bbnb\b/)) return 'crypto:bnb';
+  if (q.match(/\bsolana\b|\bsol\b/)) return 'crypto:sol';
+  if (q.match(/\bxrp\b|\bripple\b/)) return 'crypto:xrp';
+  if (q.match(/\bdoge\b|\bdogecoin\b/)) return 'crypto:doge';
+  if (q.match(/\bada\b|\bcardano\b/)) return 'crypto:ada';
+  if (q.match(/\bavax\b|\bavalanche\b/)) return 'crypto:avax';
+  if (q.match(/\bdot\b|\bpolkadot\b/)) return 'crypto:dot';
+  if (q.match(/\blink\b|\bchainlink\b/)) return 'crypto:link';
+  if (q.match(/\bsui\b/)) return 'crypto:sui';
+  if (q.match(/\bapt\b|\baptos\b/)) return 'crypto:apt';
+  if (q.match(/\bton\b|\btoncoin\b/)) return 'crypto:ton';
+  if (q.match(/\bpepe\b/)) return 'crypto:pepe';
+  if (q.match(/\btrx\b|\btron\b/)) return 'crypto:trx';
+  if (q.match(/\bhype\b|\bhyperliquid\b/)) return 'crypto:hype';
+  if (q.match(/\bjup\b|\bjupiter\b/)) return 'crypto:jup';
+  if (q.match(/\bwif\b/)) return 'crypto:wif';
+  if (q.match(/\bbonk\b/)) return 'crypto:bonk';
   if (q.match(/usd|đô|dollar/) && q.match(/vnd|đồng|việt/)) return 'fx:usd:vnd';
+  if (q.match(/\beur\b/) && q.match(/vnd|đồng/)) return 'fx:eur:vnd';
   if (q.match(/xăng|dầu|petrol|gasoline|fuel/)) return 'petrol';
+  // Crypto project or general crypto question
+  if (q.match(/crypto|coin|token|blockchain|defi|nft|web3|dự án|project|protocol|layer|chain|network|dao|airdrop|staking|yield|liquidity|dex|cex|wallet|tvl|whitepaper|funding|raise|vc|investor|vesting|unlock|launchpad|ido|ieo|ico/)) return 'crypto_search';
   if (q.match(/giá|price|hôm nay|today|hiện tại|bao nhiêu|how much|mới nhất|latest/)) return 'general';
   return null;
 }
 
 async function checkNeedsSearch(query) {
-  return detectQueryType(query) !== null || 
-    /news|tin tức|mới nhất|latest|vừa|recently|2025|2026|ritual|ritualnet/.test(query.toLowerCase());
+  if (detectQueryType(query) !== null) return true;
+  const q = query.toLowerCase();
+  if (/news|tin tức|mới nhất|latest|vừa|recently|2024|2025|2026/.test(q)) return true;
+  // Named crypto projects
+  if (/ritual|hyperliquid|sui|aptos|sei|injective|celestia|starknet|zksync|scroll|base|blast|berachain|monad|jupiter|raydium|orca|drift|marginfi|kamino|tensor|magic eden|eigenlayer|ethena|pendle|friend|pump\.fun|polymarket|kaito|nansen|karak|lens|backpack/.test(q)) return true;
+  return false;
 }
 
 async function doWebSearch(query) {
@@ -892,27 +1186,238 @@ async function doWebSearch(query) {
   if (type === 'gold') {
     const p = await getGoldPrice();
     if (p) results.push(p);
+
   } else if (type && type.startsWith('crypto:')) {
     const symbol = type.split(':')[1];
-    const p = await getCryptoPrice(symbol);
-    if (p) results.push(p);
+    // Price from exchanges
+    const price = await getCryptoPrice(symbol);
+    if (price) results.push(price);
+    // Rich project info from all 4 sources in parallel
+    const [gecko, drops, cfund, crank] = await Promise.allSettled([
+      searchCoinGecko(symbol),
+      searchDropsTab(symbol),
+      searchCryptoFundraising(symbol),
+      searchCryptorank(symbol),
+    ]);
+    if (gecko.value) results.push(gecko.value);
+    if (drops.value) results.push(drops.value);
+    if (cfund.value) results.push(cfund.value);
+    if (crank.value) results.push(crank.value);
+
+  } else if (type === 'crypto_search') {
+    // Unknown project. all 4 sources in parallel
+    const [gecko, drops, cfund, crank] = await Promise.allSettled([
+      searchCoinGecko(query),
+      searchDropsTab(query),
+      searchCryptoFundraising(query),
+      searchCryptorank(query),
+    ]);
+    if (gecko.value) results.push(gecko.value);
+    if (drops.value) results.push(drops.value);
+    if (cfund.value) results.push(cfund.value);
+    if (crank.value) results.push(crank.value);
+
   } else if (type && type.startsWith('fx:')) {
     const [,from,to] = type.split(':');
     const p = await getExchangeRate(from, to);
     if (p) results.push(p);
+
   } else if (type === 'petrol') {
-    results.push('Giá xăng dầu VN do Bộ Công Thương điều chỉnh mỗi 10 ngày. Giá xăng RON95-III hiện dao động khoảng 21.000-23.000 VND/lít. Để biết giá chính xác hôm nay, kiểm tra petrolimex.com.vn hoặc trang Bộ Công Thương.');
+    results.push('Giá xăng RON95-III VN hiện ~21.000-23.000 VND/lít. Check petrolimex.com.vn để biết giá hôm nay.');
+
+  } else {
+    // General query. try all crypto sources
+    const [gecko, drops, cfund, crank] = await Promise.allSettled([
+      searchCoinGecko(query),
+      searchDropsTab(query),
+      searchCryptoFundraising(query),
+      searchCryptorank(query),
+    ]);
+    if (gecko.value) results.push(gecko.value);
+    if (drops.value) results.push(drops.value);
+    if (cfund.value) results.push(cfund.value);
+    if (crank.value) results.push(crank.value);
   }
 
-  // Always try DuckDuckGo for context
-  try {
-    const ddgUrl = `https://api.duckduckgo.com/?q=${encodeURIComponent(query)}&format=json&no_html=1&skip_disambig=1`;
-    const ddgResp = await fetch(ddgUrl);
-    const ddgData = await ddgResp.json();
-    if (ddgData.AbstractText) results.push(ddgData.AbstractText.slice(0, 400));
-  } catch(e) {}
+  // DuckDuckGo fallback if no results yet
+  if (results.length === 0) {
+    try {
+      const ddgUrl = `https://api.duckduckgo.com/?q=${encodeURIComponent(query + ' crypto')}&format=json&no_html=1&skip_disambig=1`;
+      const r = await fetch(ddgUrl);
+      const d = await r.json();
+      if (d.AbstractText) results.push(d.AbstractText.slice(0, 600));
+      const related = d.RelatedTopics?.slice(0,2).map(t => t.Text).filter(Boolean).join(' | ');
+      if (related) results.push('Related: ' + related.slice(0, 400));
+    } catch(e) {}
+  }
 
-  return results.join('\n') || '';
+  return results.filter(Boolean).join('\n\n') || '';
+}
+
+// ── Arkham Intel API ─────────────────────────────────────────────
+let ARKHAM_API_KEY = localStorage.getItem('siggy_arkham_key') || '';
+
+function setArkhamKey(key) {
+  ARKHAM_API_KEY = key.trim();
+  const statusEl = document.getElementById('arkhamStatus');
+  if (ARKHAM_API_KEY) {
+    localStorage.setItem('siggy_arkham_key', ARKHAM_API_KEY);
+    showToast('Arkham connected ✦ wallet tracking active');
+    if (statusEl) {
+      statusEl.textContent = '✦ Connected. wallet & entity tracking active';
+      statusEl.style.color = 'var(--mint)';
+    }
+  } else {
+    localStorage.removeItem('siggy_arkham_key');
+    if (statusEl) {
+      statusEl.textContent = 'No key. onchain features disabled';
+      statusEl.style.color = 'var(--text-dim)';
+    }
+  }
+}
+
+async function arkhamFetch(endpoint, params = {}) {
+  if (!ARKHAM_API_KEY) return null;
+  const url = new URL('https://api.arkm.com' + endpoint);
+  Object.entries(params).forEach(([k, v]) => url.searchParams.set(k, v));
+  try {
+    const ctrl = new AbortController();
+    const tid = setTimeout(() => ctrl.abort(), 6000);
+    const r = await fetch(url.toString(), {
+      signal: ctrl.signal,
+      headers: { 'API-Key': ARKHAM_API_KEY, 'Accept': 'application/json' }
+    });
+    clearTimeout(tid);
+    if (!r.ok) return null;
+    return await r.json();
+  } catch(e) { return null; }
+}
+
+// Detect if query is about a wallet address
+function isWalletAddress(q) {
+  return /^0x[0-9a-fA-F]{40}$/.test(q.trim()) ||         // EVM
+         /^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(q.trim()); // Solana/BTC
+}
+
+async function searchArkham(query) {
+  if (!ARKHAM_API_KEY) return null;
+  const q = query.trim();
+  const results = [];
+
+  // Case 1: wallet address lookup
+  if (isWalletAddress(q)) {
+    const [intel, balances, transfers] = await Promise.allSettled([
+      arkhamFetch(`/intelligence/address/${q}/all`),
+      arkhamFetch(`/balances/address/${q}`),
+      arkhamFetch('/transfers', { base: q, flow: 'all', timeLast: '7d', sortKey: 'usd', sortDir: 'desc', limit: 5 })
+    ]);
+
+    if (intel.value) {
+      const d = intel.value;
+      const label = d.arkhamLabel?.name || d.label || 'Unknown';
+      const entity = d.arkhamEntity?.name || '';
+      const type = d.arkhamEntity?.type || '';
+      const tags = d.tags?.map(t => t.name || t.id).filter(Boolean).slice(0, 5).join(', ') || '';
+      let info = `[Arkham] Address: ${q}`;
+      if (label !== 'Unknown') info += `\nLabel: ${label}`;
+      if (entity) info += `\nEntity: ${entity}${type ? ' (' + type + ')' : ''}`;
+      if (tags) info += `\nTags: ${tags}`;
+      results.push(info);
+    }
+
+    if (balances.value) {
+      const tokens = balances.value?.tokens || [];
+      const topHoldings = tokens
+        .filter(t => t.usdValue > 100)
+        .sort((a, b) => (b.usdValue || 0) - (a.usdValue || 0))
+        .slice(0, 6)
+        .map(t => `${t.token?.symbol || t.tokenAddress?.slice(0,8)} $${(t.usdValue||0).toLocaleString(undefined,{maximumFractionDigits:0})}`)
+        .join(', ');
+      const totalUsd = tokens.reduce((s, t) => s + (t.usdValue || 0), 0);
+      if (totalUsd > 0) results.push(`[Arkham Balances] Total: $${totalUsd.toLocaleString(undefined,{maximumFractionDigits:0})} | Top holdings: ${topHoldings || 'N/A'}`);
+    }
+
+    if (transfers.value) {
+      const txs = transfers.value?.transfers || [];
+      if (txs.length) {
+        const recent = txs.slice(0, 3).map(tx => {
+          const dir = tx.fromAddress?.address === q ? '→' : '←';
+          const counterparty = tx.fromAddress?.address === q
+            ? (tx.toEntity?.name || tx.toAddress?.address?.slice(0,10) + '...')
+            : (tx.fromEntity?.name || tx.fromAddress?.address?.slice(0,10) + '...');
+          const usd = tx.historicalUSD ? `$${tx.historicalUSD.toLocaleString(undefined,{maximumFractionDigits:0})}` : '';
+          const token = tx.tokenSymbol || tx.token?.symbol || '';
+          return `${dir} ${counterparty} ${usd} ${token}`.trim();
+        }).join(' | ');
+        results.push(`[Arkham Transfers 7d] ${recent}`);
+      }
+    }
+
+    return results.length ? results.join('\n') : null;
+  }
+
+  // Case 2: entity/project search
+  const searchData = await arkhamFetch('/intelligence/search', {
+    query: q,
+    filterLimits: JSON.stringify({ arkhamEntities: 3, tokens: 3, addresses: 2 })
+  });
+
+  if (searchData) {
+    const entities = searchData.entities || searchData.arkhamEntities || [];
+    const tokens = searchData.tokens || [];
+
+    if (entities.length) {
+      const topEntity = entities[0];
+      const entityId = topEntity.id || topEntity.name?.toLowerCase().replace(/\s+/g, '-');
+
+      // Get entity balance
+      const [entityIntel, entityBal] = await Promise.allSettled([
+        arkhamFetch(`/intelligence/entity/${entityId}`),
+        arkhamFetch(`/balances/entity/${entityId}`, { cheap: 'true' })
+      ]);
+
+      let info = `[Arkham Entity] ${topEntity.name || entityId}`;
+      if (topEntity.type) info += ` (${topEntity.type})`;
+      if (topEntity.website) info += `\nWebsite: ${topEntity.website}`;
+      if (topEntity.twitter) info += ` | Twitter: @${topEntity.twitter}`;
+
+      if (entityIntel.value) {
+        const ei = entityIntel.value;
+        const tags = ei.tags?.map(t => t.name || t.id).filter(Boolean).slice(0, 6).join(', ');
+        if (tags) info += `\nTags: ${tags}`;
+      }
+
+      if (entityBal.value) {
+        const tokens2 = entityBal.value?.tokens || [];
+        const totalUsd = tokens2.reduce((s, t) => s + (t.usdValue || 0), 0);
+        const topHoldings = tokens2
+          .sort((a, b) => (b.usdValue || 0) - (a.usdValue || 0))
+          .slice(0, 5)
+          .map(t => `${t.token?.symbol || '?'} $${((t.usdValue||0)/1e6).toFixed(2)}M`)
+          .join(', ');
+        if (totalUsd > 0) info += `\nOnchain holdings: $${(totalUsd/1e9).toFixed(2)}B total | ${topHoldings}`;
+      }
+
+      results.push(info);
+    }
+
+    if (tokens.length) {
+      const tok = tokens[0];
+      let tinfo = `[Arkham Token] ${tok.name} (${tok.symbol?.toUpperCase()})`;
+      if (tok.chain) tinfo += ` on ${tok.chain}`;
+      results.push(tinfo);
+    }
+  }
+
+  return results.length ? results.join('\n') : null;
+}
+
+// Check if query needs Arkham
+function needsArkham(query) {
+  if (!ARKHAM_API_KEY) return false;
+  const q = query.toLowerCase();
+  if (isWalletAddress(query.trim())) return true;
+  return /wallet|address|onchain|on-chain|holdings|balance|transfer|transaction|track|whale|entity|exchange holding|cex holding|arkham/.test(q);
 }
 
 async function triggerRitualMode() {
@@ -1016,7 +1521,7 @@ async function sendMessage() {
   if (!text) return;
 
   // Secret ritual activation
-  if (/n{4,}g{4,}/i.test(text)) {
+  if (text.trim() === "gRitual") {
     input.value = ''; autoResize(input);
     triggerRitualMode();
     return;
@@ -1033,26 +1538,36 @@ async function sendMessage() {
     const needsSearch = await checkNeedsSearch(lastMsg);
     let contextMsg = '';
 
-    if (needsSearch) {
+    if (needsSearch || needsArkham(lastMsg)) {
       const typingBubble = document.getElementById('typingIndicator');
       if (typingBubble) typingBubble.querySelector('.bubble').innerHTML =
-        `<div style="font-family:'Space Mono',monospace;font-size:0.65rem;color:var(--teal);opacity:0.8">🔍 searching the web...</div>`;
-      contextMsg = await doWebSearch(lastMsg);
+        `<div style="font-family:'Quicksand',sans-serif;font-size:0.7rem;color:var(--lavender);opacity:0.85">🔍 checking CoinGecko · DropsTab · cryptorank · crypto-fundraising${ARKHAM_API_KEY ? ' · Arkham' : ''}...</div>`;
+      const [webCtx, arkhamCtx] = await Promise.allSettled([
+        needsSearch ? doWebSearch(lastMsg) : Promise.resolve(''),
+        needsArkham(lastMsg) ? searchArkham(lastMsg) : Promise.resolve(null)
+      ]);
+      contextMsg = [webCtx.value, arkhamCtx.value].filter(Boolean).join('\n\n');
     }
 
     const messages = [
-      { role: 'system', content: SIGGY_SYSTEM + (contextMsg ? `\n\n[SEARCH RESULTS]\n${contextMsg}\n[/SEARCH RESULTS]\nUse above info to answer accurately. Don't say "according to search results" — just answer naturally.` : '') },
+      { role: 'system', content: SIGGY_SYSTEM + (contextMsg ? `\n\n[SEARCH RESULTS]\n${contextMsg}\n[/SEARCH RESULTS]\nUse above info to answer accurately. Don't say "according to search results". just answer naturally.` : '') },
       ...conversationHistory
     ];
 
-    const response = await fetch('https://sweet-wind-2684.quocviet05081997.workers.dev', {
+    const GROQ_API_KEY = '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';
+    const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${GROQ_API_KEY}`
+      },
       body: JSON.stringify({ model: 'llama-3.3-70b-versatile', max_tokens: 1024, messages })
     });
     const data = await response.json();
     if (data.error) { removeTyping(); showError('Error: ' + data.error.message); return; }
-    const reply = data.choices[0].message.content;
+    let reply = data.choices[0].message.content;
+    // Strip any stray CJK characters the model occasionally inserts
+    reply = reply.replace(/[\u2E80-\u2FFF\u3000-\u303F\u3040-\u309F\u30A0-\u30FF\u3100-\u312F\u3200-\u32FF\u3400-\u4DBF\u4E00-\u9FFF\uF900-\uFAFF\uFE30-\uFE4F]/g, '');
     conversationHistory.push({ role: 'assistant', content: reply });
     removeTyping(); addSiggyMessage(reply);
   } catch (err) {
@@ -1137,7 +1652,7 @@ function newChat() {
   conversationHistory = [];
   const area = document.getElementById('chatArea');
   area.innerHTML = '<div class="oracle-line">the ritual begins</div>';
-  addSiggyMessage("Hey. Mew. I'm Siggy — ask me anything, tell me your problems, or just vibe. I know a lot of stuff and I have opinions about most of it.");
+  addSiggyMessage("Hey. Mew. I'm Siggy. ask me anything, tell me your problems, or just vibe. I know a lot of stuff and I have opinions about most of it.");
   renderHistory();
   document.getElementById('sidebar').classList.remove('open');
 }
@@ -1195,6 +1710,15 @@ window.addEventListener('load', () => {
   apiKey = 'worker'; // Key handled by Cloudflare Worker
   setApiKey();
   renderHistory();
+  // Restore Arkham key
+  const savedArkham = localStorage.getItem('siggy_arkham_key');
+  if (savedArkham) {
+    ARKHAM_API_KEY = savedArkham;
+    const inp = document.getElementById('arkhamKeyInput');
+    if (inp) inp.value = savedArkham;
+    document.getElementById('arkhamStatus').textContent = '✦ Arkham connected. wallet tracking active';
+    document.getElementById('arkhamStatus').style.color = 'var(--mint)';
+  }
   const savedTheme = localStorage.getItem('siggy_theme');
   if (savedTheme) setTheme(savedTheme);
   // Auto-save after each reply
