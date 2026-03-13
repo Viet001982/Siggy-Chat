@@ -414,27 +414,10 @@ body {
     <div class="history-empty" id="historyEmpty">No past sessions yet~</div>
   </div>
   <div class="sidebar-footer">
-    <div style="padding:0 0 0.8rem;border-bottom:1px solid rgba(196,168,255,0.1);margin-bottom:0.7rem;">
-      <div style="font-size:0.6rem;letter-spacing:0.12em;color:var(--lavender);text-transform:uppercase;margin-bottom:0.4rem;font-weight:600;">⛓ Arkham Intel API</div>
-      <div style="display:flex;gap:0.4rem;">
-        <input id="arkhamKeyInput" type="password"
-          placeholder="Paste API key..."
-          style="flex:1;background:rgba(196,168,255,0.06);border:1px solid rgba(196,168,255,0.15);border-radius:8px;color:var(--text);font-family:'Quicksand',sans-serif;font-size:0.65rem;padding:0.35rem 0.5rem;outline:none;min-width:0;transition:border-color 0.2s;"
-          oninput="this.style.borderColor='rgba(196,168,255,0.4)'"
-        />
-        <button onclick="setArkhamKey(document.getElementById('arkhamKeyInput').value)"
-          style="background:rgba(196,168,255,0.15);border:1px solid rgba(196,168,255,0.25);border-radius:8px;color:var(--lavender);font-size:0.65rem;padding:0.35rem 0.6rem;cursor:pointer;white-space:nowrap;font-family:'Quicksand',sans-serif;transition:all 0.2s;"
-          onmouseover="this.style.background='rgba(196,168,255,0.28)'" onmouseout="this.style.background='rgba(196,168,255,0.15)'">
-          Save
-        </button>
-      </div>
-      <div id="arkhamStatus" style="font-size:0.58rem;color:var(--text-dim);margin-top:0.3rem;"></div>
-    </div>
-    <div class="sidebar-section-label" style="padding:0 0 0.4rem">🎨 Theme</div>
+    <div class="sidebar-section-label" style="padding:0 0 0.5rem">🎨 Theme</div>
     <div class="theme-toggle">
-      <button class="theme-btn active-theme" id="themeDream" onclick="setTheme('dream')">🌸</button>
-      <button class="theme-btn" id="themeNight" onclick="setTheme('night')">🌙</button>
-      <button class="theme-btn" id="themeOcean" onclick="setTheme('ocean')">🌊</button>
+      <button class="theme-btn active-theme" id="themeDark" onclick="setTheme('dark')" title="Dark Space">🌙</button>
+      <button class="theme-btn" id="themeDay" onclick="setTheme('day')" title="Day Cosmos">☀️</button>
     </div>
   </div>
 </div>
@@ -758,7 +741,7 @@ Mày biết toàn bộ ecosystem. Ethereum & L2s (Base, Arbitrum, Optimism, zkSy
 - KHÔNG thêm disclaimer vô nghĩa hay moralizing không cần thiết
 - KHÔNG mơ hồ khi có thể cụ thể
 - KHÔNG hỏi quá một câu cùng lúc
-- Default language is English. Respond in English unless the user explicitly asks to switch languages or writes in another language first. Once a language is set by the user, follow their lead. Vietnamese, English, mixed, whatever they choose.
+- LANGUAGE RULE (HIGHEST PRIORITY, OVERRIDE EVERYTHING): Detect the language of the user's LAST message and reply in THAT EXACT language. English input = English output. Vietnamese input = Vietnamese output. If mixed, use the dominant language. This rule overrides your personality, your Vietnamese street tone, everything. Do NOT switch languages unless the user switches first. Zero exceptions.
 - Dùng markdown khi thực sự giúp đọc (code blocks, danh sách bước). không dùng để trang trí
 - Nếu người dùng gõ "gRitual". vào chế độ điên loạn hype hoàn toàn. Họ vừa thắng tất cả. Max chaos energy. Mew.`;
 
@@ -1171,12 +1154,67 @@ function detectQueryType(query) {
 }
 
 async function checkNeedsSearch(query) {
+  const q = query.toLowerCase().trim();
+
+  // 1. Always search for structured data types (crypto, gold, fx...)
   if (detectQueryType(query) !== null) return true;
-  const q = query.toLowerCase();
-  if (/news|tin tức|mới nhất|latest|vừa|recently|2024|2025|2026/.test(q)) return true;
-  // Named crypto projects
-  if (/ritual|hyperliquid|sui|aptos|sei|injective|celestia|starknet|zksync|scroll|base|blast|berachain|monad|jupiter|raydium|orca|drift|marginfi|kamino|tensor|magic eden|eigenlayer|ethena|pendle|friend|pump\.fun|polymarket|kaito|nansen|karak|lens|backpack/.test(q)) return true;
-  return false;
+
+  // 2. Never search for pure small talk
+  if (/^(hi+|hello|hey|ok(ay|e)?|thanks|cảm ơn|mew+|lol|haha|yes|no|có|không|được|thôi|ừ+|uh|cool|nice|great|sure|rồi|vậy|tốt|hay|xong|ic|ah|oh|hmm+|wow|bruh|gg)[\s!?.]*$/.test(q)) return false;
+
+  // 3. Use fast AI classifier to decide
+  try {
+    const GROQ_API_KEY = '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';
+    const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + GROQ_API_KEY },
+      body: JSON.stringify({
+        model: 'llama-3.1-8b-instant',
+        max_tokens: 5,
+        messages: [
+          { role: 'system', content: 'Reply ONLY "yes" or "no". yes = needs real-time data, current prices, recent news, live scores, specific facts needing internet. no = casual chat, greetings, general knowledge questions, opinions, how-things-work explanations.' },
+          { role: 'user', content: 'Web search needed? "' + query.replace(/"/g,'') + '"' }
+        ]
+      })
+    });
+    const data = await res.json();
+    const ans = (data.choices?.[0]?.message?.content || '').toLowerCase().trim();
+    return ans.startsWith('yes');
+  } catch(e) {
+    return q.length > 20 && /[?]|what|who|when|where|how much|giá|tin |mới nhất|latest|current|today|now|hôm nay|hiện tại/.test(q);
+  }
+}
+
+async function searchDDG(query) {
+  try {
+    const encoded = encodeURIComponent(query);
+    const proxyUrl = 'https://api.allorigins.win/get?url=' + encodeURIComponent('https://html.duckduckgo.com/html/?q=' + encoded);
+    const resp = await fetch(proxyUrl, { signal: AbortSignal.timeout(8000) });
+    const data = await resp.json();
+    const html = data.contents || '';
+    const snippets = [];
+    const titles = [];
+    const snipRe = /result__snippet[^>]*>([\s\S]*?)<\/a>/g;
+    const titlRe = /result__a[^>]*>([\s\S]*?)<\/a>/g;
+    let m;
+    let sc = 0, tc = 0;
+    while ((m = snipRe.exec(html)) !== null && sc < 5) {
+      const t = m[1].replace(/<[^>]+>/g,'').replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&#x27;/g,"'").replace(/&quot;/g,'"').trim();
+      if (t.length > 40) { snippets.push(t); sc++; }
+    }
+    while ((m = titlRe.exec(html)) !== null && tc < 5) {
+      const t = m[1].replace(/<[^>]+>/g,'').trim();
+      if (t.length > 10) { titles.push(t); tc++; }
+    }
+    if (snippets.length === 0 && titles.length === 0) return '';
+    let out = '[Web Search: ' + query + ']\n';
+    for (let i = 0; i < Math.max(titles.length, snippets.length); i++) {
+      if (titles[i]) out += (i+1) + '. ' + titles[i];
+      if (snippets[i]) out += ': ' + snippets[i];
+      out += '\n';
+    }
+    return out.slice(0, 2000);
+  } catch(e) { return ''; }
 }
 
 async function doWebSearch(query) {
@@ -1226,29 +1264,25 @@ async function doWebSearch(query) {
     results.push('Giá xăng RON95-III VN hiện ~21.000-23.000 VND/lít. Check petrolimex.com.vn để biết giá hôm nay.');
 
   } else {
-    // General query. try all crypto sources
-    const [gecko, drops, cfund, crank] = await Promise.allSettled([
+    // General query: run DDG web search + crypto sources in parallel
+    const [gecko, drops, cfund, crank, ddg] = await Promise.allSettled([
       searchCoinGecko(query),
       searchDropsTab(query),
       searchCryptoFundraising(query),
       searchCryptorank(query),
+      searchDDG(query),
     ]);
     if (gecko.value) results.push(gecko.value);
     if (drops.value) results.push(drops.value);
     if (cfund.value) results.push(cfund.value);
     if (crank.value) results.push(crank.value);
+    if (ddg.value) results.push(ddg.value);
   }
 
-  // DuckDuckGo fallback if no results yet
+  // Always try DDG if still empty
   if (results.length === 0) {
-    try {
-      const ddgUrl = `https://api.duckduckgo.com/?q=${encodeURIComponent(query + ' crypto')}&format=json&no_html=1&skip_disambig=1`;
-      const r = await fetch(ddgUrl);
-      const d = await r.json();
-      if (d.AbstractText) results.push(d.AbstractText.slice(0, 600));
-      const related = d.RelatedTopics?.slice(0,2).map(t => t.Text).filter(Boolean).join(' | ');
-      if (related) results.push('Related: ' + related.slice(0, 400));
-    } catch(e) {}
+    const ddgResult = await searchDDG(query).catch(() => '');
+    if (ddgResult) results.push(ddgResult);
   }
 
   return results.filter(Boolean).join('\n\n') || '';
@@ -1421,96 +1455,130 @@ function needsArkham(query) {
 }
 
 async function triggerRitualMode() {
-  // Remove old overlay if exists
   const old = document.getElementById('_ritualOv');
   if(old) old.remove();
 
   const W = window.innerWidth, H = window.innerHeight;
+  const cx = W/2, cy = H/2;
+
   const ov = document.createElement('div');
   ov.id = '_ritualOv';
   ov.style.cssText = 'position:fixed;inset:0;z-index:9999;pointer-events:none;overflow:hidden;';
 
   const bg = document.createElement('div');
-  bg.style.cssText = 'position:absolute;inset:0;background:radial-gradient(ellipse at center,transparent 20%,rgba(0,0,0,0.9) 100%);opacity:0;transition:opacity 1s;';
+  bg.style.cssText = 'position:absolute;inset:0;background:radial-gradient(ellipse at center,transparent 20%,rgba(0,0,0,0.92) 100%);opacity:0;transition:opacity 0.8s;';
   ov.appendChild(bg);
 
   const txt = document.createElement('div');
-  txt.textContent = '✦ RITUAL ✦';
-  txt.style.cssText = `position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) scale(0.2);
-    font-family:'Pacifico',cursive;font-size:clamp(3rem,10vw,7rem);letter-spacing:0.25em;
-    background:linear-gradient(135deg,#c4a8ff,#ff9de2,#a8ffee,#ffd6a5);
-    -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
-    opacity:0;transition:all 1.4s cubic-bezier(0.34,1.56,0.64,1);white-space:nowrap;`;
+  txt.textContent = '\u2726 RITUAL \u2726';
+  txt.style.cssText = 'position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) scale(0.1);'
+    + 'font-family:Pacifico,cursive;font-size:clamp(3rem,10vw,7rem);letter-spacing:0.25em;'
+    + 'background:linear-gradient(135deg,#c4a8ff,#ff9de2,#a8ffee,#ffd6a5);'
+    + '-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;'
+    + 'opacity:0;transition:all 1.6s cubic-bezier(0.34,1.56,0.64,1);white-space:nowrap;';
   ov.appendChild(txt);
 
   const cat = document.createElement('div');
   cat.textContent = '🐈‍⬛';
-  cat.style.cssText = 'position:absolute;font-size:2.5rem;opacity:1;transition:left 0.05s linear,top 0.05s linear;filter:drop-shadow(0 0 12px rgba(196,168,255,0.9));';
+  cat.style.cssText = 'position:absolute;font-size:3rem;opacity:0;z-index:10001;display:inline-block;'
+    + 'filter:drop-shadow(0 0 16px rgba(196,168,255,1));will-change:transform;'
+    + 'transform-origin:center center;';
   ov.appendChild(cat);
 
   document.body.appendChild(ov);
-  setTimeout(()=>{ bg.style.opacity='1'; },100);
+  setTimeout(function(){ bg.style.opacity='1'; }, 80);
 
-  // Build perimeter path
-  const pad=50;
-  const path=[];
-  // top
-  for(let i=0;i<=40;i++) path.push({x:pad+(W-pad*2)*(i/40),y:pad});
-  // right
-  for(let i=1;i<=28;i++) path.push({x:W-pad,y:pad+(H-pad*2)*(i/28)});
-  // bottom
-  for(let i=1;i<=40;i++) path.push({x:W-pad-(W-pad*2)*(i/40),y:H-pad});
-  // left
-  for(let i=1;i<=28;i++) path.push({x:pad,y:H-pad-(H-pad*2)*(i/28)});
-
-  let step=0;
-  const totalMs=3400;
-  const iv=totalMs/path.length;
-
-  function spawnSparkle(x,y) {
-    const sp=document.createElement('div');
-    sp.textContent=['✦','✧','⋆','★','·','✵'][Math.floor(Math.random()*6)];
-    sp.style.cssText=`position:fixed;left:${x}px;top:${y}px;transform:translate(-50%,-50%) scale(0);
-      font-size:${Math.random()*1.2+0.6}rem;z-index:10000;pointer-events:none;
-      color:${['#c4a8ff','#ff9de2','#a8ffee','#ffd6a5'][Math.floor(Math.random()*4)]};
-      animation:_sparkle 0.9s ease-out forwards;`;
-    document.body.appendChild(sp);
-    setTimeout(()=>sp.remove(),950);
-  }
-
-  // Inject sparkle keyframe once
   if(!document.getElementById('_sparkleStyle')) {
-    const st=document.createElement('style');
-    st.id='_sparkleStyle';
-    st.textContent='@keyframes _sparkle{0%{opacity:1;transform:translate(-50%,-50%) scale(0)}50%{opacity:1;transform:translate(-50%,-50%) scale(1.4)}100%{opacity:0;transform:translate(-50%,-50%) scale(2.5)}}';
+    const st = document.createElement('style');
+    st.id = '_sparkleStyle';
+    st.textContent = '@keyframes _sparkle{0%{opacity:1;transform:translate(-50%,-50%) scale(0) rotate(0deg)}50%{opacity:1;transform:translate(-50%,-50%) scale(1.6) rotate(180deg)}100%{opacity:0;transform:translate(-50%,-50%) scale(2.8) rotate(360deg)}}'
+      + '@keyframes _catAppear{from{opacity:0;transform:scale(0.4)}to{opacity:1;transform:scale(1)}}'
+      + '@keyframes _catVanish{0%{opacity:1;transform:scale(1)}60%{opacity:0.6;transform:scale(2.4)}100%{opacity:0;transform:scale(0.1)}}'
+      + '@keyframes _catWiggle{0%,100%{transform:rotate(var(--cat-dir,0deg)) scaleX(1) scaleY(1)}20%{transform:rotate(calc(var(--cat-dir,0deg) - 12deg)) scaleX(1.15) scaleY(0.88)}40%{transform:rotate(calc(var(--cat-dir,0deg) + 10deg)) scaleX(0.9) scaleY(1.12)}60%{transform:rotate(calc(var(--cat-dir,0deg) - 8deg)) scaleX(1.1) scaleY(0.92)}80%{transform:rotate(calc(var(--cat-dir,0deg) + 6deg)) scaleX(0.95) scaleY(1.06)}}'
+      + '@keyframes _catBob{0%,100%{margin-top:0px}50%{margin-top:-6px}}';
     document.head.appendChild(st);
   }
 
-  const timer=setInterval(()=>{
-    if(step>=path.length){
+  function spawnSparkle(x, y, big) {
+    const sp = document.createElement('div');
+    sp.textContent = ['\u2726','\u2727','\u22C6','\u2605','\u2735','\u25C6'][Math.floor(Math.random()*6)];
+    const sz = big ? (Math.random()*1.8+1.2) : (Math.random()*1.0+0.5);
+    sp.style.cssText = 'position:fixed;left:'+x+'px;top:'+y+'px;transform:translate(-50%,-50%) scale(0);'
+      + 'font-size:'+sz+'rem;z-index:10002;pointer-events:none;'
+      + 'color:'+['#c4a8ff','#ff9de2','#a8ffee','#ffd6a5','#ffffff'][Math.floor(Math.random()*5)]+';'
+      + 'animation:_sparkle '+(big?1.2:0.8)+'s ease-out forwards;';
+    document.body.appendChild(sp);
+    setTimeout(function(){ sp.remove(); }, big ? 1250 : 850);
+  }
+
+  // Build spiral path: 3 loops shrinking inward from edge to center
+  const path = [];
+  const LOOPS = 3;
+  const STEPS = 240;
+  const startAngle = Math.random() * Math.PI * 2;
+  const maxR = Math.sqrt(cx*cx + cy*cy) * 1.05;
+
+  for(let i=0; i<=STEPS; i++) {
+    const t = i/STEPS;
+    const angle = startAngle + t * LOOPS * Math.PI * 2;
+    const r = maxR * Math.pow(1-t, 1.3);
+    path.push({ x: cx + Math.cos(angle)*r, y: cy + Math.sin(angle)*r });
+  }
+
+  // Place cat at start
+  cat.style.left = (path[0].x - 24)+'px';
+  cat.style.top  = (path[0].y - 24)+'px';
+  setTimeout(function(){
+    cat.style.animation = '_catAppear 0.4s ease-out forwards';
+    cat.style.opacity = '1';
+  }, 300);
+
+  let step = 0;
+  const frameMs = 4500 / path.length;
+  let lastX = path[0].x, lastY = path[0].y;
+
+  const timer = setInterval(function() {
+    if(step >= path.length) {
       clearInterval(timer);
-      cat.style.opacity='0';
-      txt.style.opacity='1';
-      txt.style.transform='translate(-50%,-50%) scale(1)';
-      // Center burst
-      for(let i=0;i<24;i++) {
-        setTimeout(()=>spawnSparkle(W/2+(Math.random()-0.5)*300, H/2+(Math.random()-0.5)*200),i*55);
+      // Burst + vanish
+      for(let i=0;i<32;i++) {
+        setTimeout(function(){ spawnSparkle(cx+(Math.random()-0.5)*260, cy+(Math.random()-0.5)*180, true); }, i*45);
       }
-      setTimeout(()=>{
-        txt.style.transition='opacity 1s, transform 1s';
-        txt.style.opacity='0';
-        txt.style.transform='translate(-50%,-50%) scale(1.5)';
-        bg.style.opacity='0';
-        setTimeout(()=>ov.remove(),1100);
-      },3000);
+      cat.style.animation = '_catVanish 0.7s ease-in forwards';
+      setTimeout(function() {
+        cat.style.display = 'none';
+        txt.style.opacity = '1';
+        txt.style.transform = 'translate(-50%,-50%) scale(1)';
+        for(let i=0;i<40;i++) {
+          setTimeout(function(){ spawnSparkle(cx+(Math.random()-0.5)*400, cy+(Math.random()-0.5)*260, Math.random()>0.5); }, i*60);
+        }
+        setTimeout(function() {
+          txt.style.transition = 'opacity 1.2s, transform 1.2s';
+          txt.style.opacity = '0';
+          txt.style.transform = 'translate(-50%,-50%) scale(1.6)';
+          bg.style.opacity = '0';
+          setTimeout(function(){ ov.remove(); }, 1300);
+        }, 3200);
+      }, 650);
       return;
     }
-    const pt=path[step];
-    cat.style.left=(pt.x-20)+'px';
-    cat.style.top=(pt.y-20)+'px';
-    if(step%3===0) spawnSparkle(pt.x,pt.y);
+
+    const pt = path[step];
+    const dx = pt.x - lastX, dy = pt.y - lastY;
+    const angle = Math.atan2(dy, dx) * (180/Math.PI);
+    const t = step/path.length;
+    // Scale up as approaching center for dramatic effect
+    const scl = 1 + t * 0.5;
+    cat.style.setProperty('--cat-dir', (angle+90)+'deg');
+    cat.style.transform = 'rotate('+(angle+90)+'deg) scale('+scl+')';
+    cat.style.animation = '_catWiggle 0.3s ease-in-out infinite, _catBob 0.25s ease-in-out infinite';
+    cat.style.left = (pt.x-24)+'px';
+    cat.style.top  = (pt.y-24)+'px';
+    lastX = pt.x; lastY = pt.y;
+
+    if(step % (t > 0.7 ? 2 : 5) === 0) spawnSparkle(pt.x, pt.y, false);
     step++;
-  },iv);
+  }, frameMs);
 }
 
 async function sendMessage() {
@@ -1539,9 +1607,7 @@ async function sendMessage() {
     let contextMsg = '';
 
     if (needsSearch || needsArkham(lastMsg)) {
-      const typingBubble = document.getElementById('typingIndicator');
-      if (typingBubble) typingBubble.querySelector('.bubble').innerHTML =
-        `<div style="font-family:'Quicksand',sans-serif;font-size:0.7rem;color:var(--lavender);opacity:0.85">🔍 checking CoinGecko · DropsTab · cryptorank · crypto-fundraising${ARKHAM_API_KEY ? ' · Arkham' : ''}...</div>`;
+      // searching silently
       const [webCtx, arkhamCtx] = await Promise.allSettled([
         needsSearch ? doWebSearch(lastMsg) : Promise.resolve(''),
         needsArkham(lastMsg) ? searchArkham(lastMsg) : Promise.resolve(null)
@@ -1564,19 +1630,21 @@ async function sendMessage() {
       body: JSON.stringify({ model: 'llama-3.3-70b-versatile', max_tokens: 1024, messages })
     });
     const data = await response.json();
-    if (data.error) { removeTyping(); showError('Error: ' + data.error.message); return; }
-    let reply = data.choices[0].message.content;
-    // Strip any stray CJK characters the model occasionally inserts
+    if (data.error) throw new Error(data.error.message);
+    let reply = (data.choices[0].message.content || '').trim();
+    if (!reply) reply = 'Tao đang nghĩ. Hỏi lại đi.';
     reply = reply.replace(/[\u2E80-\u2FFF\u3000-\u303F\u3040-\u309F\u30A0-\u30FF\u3100-\u312F\u3200-\u32FF\u3400-\u4DBF\u4E00-\u9FFF\uF900-\uFAFF\uFE30-\uFE4F]/g, '');
     conversationHistory.push({ role: 'assistant', content: reply });
-    removeTyping(); addSiggyMessage(reply);
+    removeTyping();
+    addSiggyMessage(reply);
   } catch (err) {
     removeTyping();
-    showError('The void did not respond. Check your key and internet connection.');
+    showError('Lỗi: ' + (err.message || 'Không kết nối được. Thử lại đi.'));
+  } finally {
+    isTyping = false;
+    document.getElementById('sendBtn').disabled = false;
+    document.getElementById('msgInput').focus();
   }
-  isTyping = false;
-  document.getElementById('sendBtn').disabled = false;
-  document.getElementById('msgInput').focus();
 }
 
 function handleKey(e) { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } }
@@ -1676,27 +1744,67 @@ function clearAllHistory() {
 function setTheme(theme) {
   const root = document.documentElement;
   document.querySelectorAll('.theme-btn').forEach(b => b.classList.remove('active-theme'));
-  if (theme === 'light') {
-    root.style.setProperty('--void', '#f5f0e8');
-    root.style.setProperty('--text', '#2a2018');
-    root.style.setProperty('--text-dim', '#8a7a6a');
-    root.style.setProperty('--gold-pale', '#5a3a10');
-    document.getElementById('themeLight').classList.add('active-theme');
-  } else if (theme === 'teal') {
-    root.style.setProperty('--void', '#020f0f');
-    root.style.setProperty('--text', '#b8e8e0');
-    root.style.setProperty('--gold', '#4ecdc4');
-    root.style.setProperty('--gold-pale', '#a8f0e8');
-    document.getElementById('themeTeal').classList.add('active-theme');
+  const nebula = document.querySelector('.nebula');
+  const canvas = document.getElementById('starCanvas');
+
+  if (theme === 'day') {
+    root.style.setProperty('--bg', '#0a1628');
+    root.style.setProperty('--bg2', '#0d1f3c');
+    root.style.setProperty('--text', '#e8f4ff');
+    root.style.setProperty('--text-dim', '#7aadda');
+    root.style.setProperty('--lavender', '#7ec8f5');
+    root.style.setProperty('--pink', '#a8d8ff');
+    root.style.setProperty('--mint', '#b8f0e0');
+    root.style.setProperty('--peach', '#ffd8a0');
+    root.style.setProperty('--gold', '#ffe4a0');
+    root.style.setProperty('--bubble-siggy', 'rgba(126,200,245,0.13)');
+    root.style.setProperty('--bubble-user', 'rgba(168,216,255,0.1)');
+    root.style.setProperty('--star', '#ffffff');
+    if (nebula) nebula.style.background = [
+      'radial-gradient(ellipse 80% 60% at 50% -10%, rgba(255,220,100,0.35) 0%, transparent 55%)',
+      'radial-gradient(ellipse 60% 40% at 20% 30%, rgba(126,200,245,0.25) 0%, transparent 60%)',
+      'radial-gradient(ellipse 50% 50% at 80% 60%, rgba(168,216,255,0.2) 0%, transparent 60%)',
+      'radial-gradient(ellipse 100% 100% at 50% 50%, rgba(10,22,40,1) 0%, #0a1628 100%)'
+    ].join(',');
+    // Sun glow element
+    let sun = document.getElementById('_themeSun');
+    if (!sun) {
+      sun = document.createElement('div');
+      sun.id = '_themeSun';
+      sun.style.cssText = 'position:fixed;top:-80px;left:50%;transform:translateX(-50%);width:260px;height:260px;border-radius:50%;z-index:0;pointer-events:none;transition:opacity 0.8s;'
+        + 'background:radial-gradient(circle,rgba(255,230,100,0.55) 0%,rgba(255,200,60,0.25) 35%,transparent 70%);'
+        + 'filter:blur(18px);';
+      document.body.insertBefore(sun, document.body.firstChild);
+    }
+    sun.style.opacity = '1';
+    document.getElementById('themeDay').classList.add('active-theme');
   } else {
-    root.style.setProperty('--void', '#050508');
-    root.style.setProperty('--text', '#d4c5a9');
-    root.style.setProperty('--gold', '#c9a84c');
-    root.style.setProperty('--gold-pale', '#e8d5a3');
+    // Dark (default)
+    root.style.setProperty('--bg', '#0d0520');
+    root.style.setProperty('--bg2', '#130a2e');
+    root.style.setProperty('--text', '#f0e6ff');
+    root.style.setProperty('--text-dim', '#9b86c4');
+    root.style.setProperty('--lavender', '#c4a8ff');
+    root.style.setProperty('--pink', '#ff9de2');
+    root.style.setProperty('--mint', '#a8ffee');
+    root.style.setProperty('--peach', '#ffcba4');
+    root.style.setProperty('--gold', '#ffd6a5');
+    root.style.setProperty('--bubble-siggy', 'rgba(196,168,255,0.12)');
+    root.style.setProperty('--bubble-user', 'rgba(255,157,226,0.1)');
+    root.style.setProperty('--star', '#fff8e7');
+    if (nebula) nebula.style.background = [
+      'radial-gradient(ellipse 60% 40% at 15% 20%, rgba(196,168,255,0.18) 0%, transparent 60%)',
+      'radial-gradient(ellipse 50% 60% at 85% 75%, rgba(255,157,226,0.14) 0%, transparent 60%)',
+      'radial-gradient(ellipse 40% 50% at 50% 50%, rgba(168,255,238,0.06) 0%, transparent 70%)',
+      'radial-gradient(ellipse 80% 80% at 50% 50%, rgba(13,5,32,1) 0%, #0d0520 100%)'
+    ].join(',');
+    const sun = document.getElementById('_themeSun');
+    if (sun) sun.style.opacity = '0';
     document.getElementById('themeDark').classList.add('active-theme');
   }
+  document.body.style.background = 'var(--bg)';
   localStorage.setItem('siggy_theme', theme);
-  showToast('Theme changed ✦');
+  showToast(theme === 'day' ? 'Day Cosmos ☀️' : 'Dark Space 🌙');
 }
 
 // Auto-save on every message
@@ -1710,17 +1818,9 @@ window.addEventListener('load', () => {
   apiKey = 'worker'; // Key handled by Cloudflare Worker
   setApiKey();
   renderHistory();
-  // Restore Arkham key
-  const savedArkham = localStorage.getItem('siggy_arkham_key');
-  if (savedArkham) {
-    ARKHAM_API_KEY = savedArkham;
-    const inp = document.getElementById('arkhamKeyInput');
-    if (inp) inp.value = savedArkham;
-    document.getElementById('arkhamStatus').textContent = '✦ Arkham connected. wallet tracking active';
-    document.getElementById('arkhamStatus').style.color = 'var(--mint)';
-  }
+
   const savedTheme = localStorage.getItem('siggy_theme');
-  if (savedTheme) setTheme(savedTheme);
+  setTheme(savedTheme || 'dark');
   // Auto-save after each reply
   const origAddSiggy = window.addSiggyMessage;
   window.addSiggyMessage = function(text) {
