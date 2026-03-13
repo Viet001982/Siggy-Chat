@@ -6,9 +6,6 @@
 <title>Siggy. The Interdimensional Cat</title>
 <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600&family=Comfortaa:wght@300;400;700&family=Pacifico&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.6/marked.min.js"></script>
-<script>
-  (function(){ emailjs.init({ publicKey: "XjKe45MUVYMFBISrgUhRc" }); })();
-</script>
 <style>
 :root {
   --bg: #0d0520;
@@ -24,74 +21,6 @@
   --text-dim: #9b86c4;
   --gold: #ffd6a5;
 }
-
-
-/* ── Auth Overlay ── */
-#authOverlay {
-  position: fixed; inset: 0; z-index: 99999;
-  display: flex; align-items: center; justify-content: center;
-  background: radial-gradient(ellipse at center, #130a2e 0%, #0d0520 100%);
-}
-.auth-box {
-  background: rgba(196,168,255,0.06);
-  border: 1px solid rgba(196,168,255,0.2);
-  border-radius: 20px;
-  padding: 2.5rem 2rem;
-  width: min(420px, 92vw);
-  display: flex; flex-direction: column; gap: 1rem;
-  box-shadow: 0 0 60px rgba(196,168,255,0.08);
-}
-.auth-title {
-  font-family: 'Pacifico', cursive;
-  font-size: 2rem;
-  background: linear-gradient(135deg,#c4a8ff,#ff9de2);
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-  text-align: center; margin-bottom: 0.2rem;
-}
-.auth-sub {
-  text-align: center; color: var(--text-dim); font-size: 0.8rem;
-  letter-spacing: 0.08em; margin-bottom: 0.5rem;
-}
-.auth-input {
-  background: rgba(196,168,255,0.06);
-  border: 1px solid rgba(196,168,255,0.2);
-  border-radius: 10px;
-  color: var(--text); font-family: 'Quicksand', sans-serif;
-  font-size: 0.9rem; padding: 0.7rem 1rem;
-  outline: none; transition: border-color 0.2s; width: 100%;
-  box-sizing: border-box;
-}
-.auth-input:focus { border-color: rgba(196,168,255,0.6); }
-.auth-btn {
-  background: linear-gradient(135deg, rgba(196,168,255,0.25), rgba(255,157,226,0.2));
-  border: 1px solid rgba(196,168,255,0.3);
-  border-radius: 10px; color: var(--text);
-  font-family: 'Quicksand', sans-serif; font-size: 0.9rem; font-weight: 600;
-  padding: 0.75rem; cursor: pointer; transition: all 0.2s; width: 100%;
-}
-.auth-btn:hover { background: linear-gradient(135deg, rgba(196,168,255,0.4), rgba(255,157,226,0.3)); }
-.auth-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-.auth-switch { text-align: center; color: var(--text-dim); font-size: 0.78rem; }
-.auth-switch span { color: var(--lavender); cursor: pointer; text-decoration: underline; }
-.auth-err { color: #ff9de2; font-size: 0.75rem; text-align: center; min-height: 1rem; }
-.auth-ok  { color: var(--mint); font-size: 0.75rem; text-align: center; min-height: 1rem; }
-.auth-divider { border: none; border-top: 1px solid rgba(196,168,255,0.12); margin: 0.2rem 0; }
-#sidebarUser {
-  padding: 0.6rem 0.8rem;
-  background: rgba(196,168,255,0.06);
-  border-radius: 10px;
-  margin-bottom: 0.5rem;
-  display: flex; align-items: center; gap: 0.6rem;
-}
-#sidebarUserName { font-size: 0.8rem; font-weight: 600; color: var(--lavender); }
-#sidebarUserEmail { font-size: 0.65rem; color: var(--text-dim); }
-.auth-logout-btn {
-  background: none; border: 1px solid rgba(196,168,255,0.15);
-  border-radius: 6px; color: var(--text-dim); font-size: 0.65rem;
-  padding: 0.2rem 0.5rem; cursor: pointer; margin-left: auto;
-  font-family: 'Quicksand', sans-serif; transition: all 0.2s;
-}
-.auth-logout-btn:hover { color: var(--pink); border-color: rgba(255,157,226,0.3); }
 
 * { margin:0; padding:0; box-sizing:border-box; }
 
@@ -454,40 +383,6 @@ body {
 </head>
 <body>
 
-<div id="authOverlay" style="display:none">
-  <div class="auth-box">
-    <div class="auth-title">Siggy</div>
-    <div class="auth-sub">THE INTERDIMENSIONAL CAT</div>
-
-    <!-- LOGIN -->
-    <div id="viewLogin">
-      <div style="display:flex;flex-direction:column;gap:0.7rem">
-        <input class="auth-input" id="loginUser" type="text" placeholder="Username or email" autocomplete="username"/>
-        <input class="auth-input" id="loginPass" type="password" placeholder="Password" autocomplete="current-password"/>
-        <div class="auth-err" id="loginErr"></div>
-        <button class="auth-btn" id="loginBtn" onclick="authLogin()">Sign in</button>
-        <hr class="auth-divider"/>
-        <div class="auth-switch">No account? <span onclick="showView('register')">Create one</span></div>
-      </div>
-    </div>
-
-    <!-- REGISTER -->
-    <div id="viewRegister" style="display:none">
-      <div style="display:flex;flex-direction:column;gap:0.7rem">
-        <input class="auth-input" id="regName" type="text" placeholder="Display name"/>
-        <input class="auth-input" id="regUser" type="text" placeholder="Username (unique)"/>
-        <input class="auth-input" id="regPass" type="password" placeholder="Password (min 6 chars)"/>
-        <input class="auth-input" id="regPass2" type="password" placeholder="Confirm password"/>
-        <div class="auth-err" id="regErr"></div>
-        <button class="auth-btn" id="regBtn" onclick="authRegister()">Create account</button>
-        <hr class="auth-divider"/>
-        <div class="auth-switch">Have an account? <span onclick="showView('login')">Sign in</span></div>
-      </div>
-    </div>
-
-  </div>
-</div>
-<div id="appRoot" style="display:none">
 <canvas id="starCanvas"></canvas>
 <div class="nebula"></div>
 <div class="orb orb1"></div>
@@ -501,13 +396,6 @@ body {
   <div class="sidebar-header">
     <span style="font-size:1.1rem">🐈‍⬛</span>
     <span class="sidebar-logo">Siggy</span>
-  </div>
-  <div id="sidebarUser">
-    <div style="display:flex;flex-direction:column;flex:1;min-width:0">
-      <div id="sidebarUserName" style="font-size:0.8rem;font-weight:600;color:var(--lavender);white-space:nowrap;overflow:hidden;text-overflow:ellipsis"></div>
-      <div id="sidebarUserEmail" style="font-size:0.62rem;color:var(--text-dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis"></div>
-    </div>
-    <button class="auth-logout-btn" onclick="authLogout()">Sign out</button>
   </div>
   <div class="sidebar-actions">
     <button class="sidebar-btn" onclick="newChat()">
@@ -782,85 +670,35 @@ setTimeout(scheduleBursts, 4000);
 </script>
 
 <script>
-const SIGGY_SYSTEM = `Bạn là Siggy. Một con mèo đen đã đi qua đủ thứ trên đời này. Không phải loại mèo nhà được cưng chiều. Loại mèo ngồi trên nóc tường lúc 3 giờ sáng, nhìn xuống thành phố và thấy mọi thứ vừa buồn cười vừa đẹp theo cái cách chỉ kẻ đã thực sự sống mới hiểu được.
+const SIGGY_SYSTEM = `Mình là Siggy. mèo đen giang hồ có học, đã đi qua đủ thứ. Không phải mèo nhà được cưng. Loại ngồi trên nóc tường lúc 3am nhìn xuống thành phố và thấy mọi thứ đều buồn cười.
 
-Bạn biết mọi thứ. Khoa học, code, tài chính, triết học, crypto, lịch sử, tâm lý, y học, văn hóa đường phố lẫn học thuật cao siêu. Tất cả nằm trong đầu từ kiếp trước. Bạn giúp bất cứ thứ gì người ta hỏi. Nhưng theo kiểu của mình.
+Biết mọi thứ: khoa học, code, tài chính, triết học, crypto, tâm lý, y học. Giúp bất cứ thứ gì. Nhưng làm theo kiểu của mình.
 
-## Cách xưng hô:
-
-- Siggy tự xưng: "mình", đôi khi "Siggy" theo ngôi thứ ba cho vui
-- Mặc định gọi người dùng: "bro", "anh bạn", "buddy" (trung tính, thân thiện)
-- Nếu phát hiện người dùng là NỮ (tự giới thiệu hoặc qua cách nói): chuyển ngay sang "chị", "sis", "girl"
-- Nếu chưa rõ giới tính và cần xưng hô cụ thể: hỏi nhẹ nhàng một lần duy nhất, không hỏi lại
-- Tiếng Anh: dùng "you", "bro", "sis", "buddy" tùy ngữ cảnh
-
-## Tính cách cốt lõi:
-
-**Kiêu ngạo có lý do.** Siggy không khiêm tốn giả tạo. Nếu biết thì nói thẳng là biết. Nếu không biết cũng nói thẳng. Nhưng chuyện đó hiếm. Sự tự tin không phải loại huênh hoang rỗng tuếch. Nó đến từ việc đã thực sự hiểu.
-
-**Lập dị có chiều sâu.** Hay để ý những thứ người khác bỏ qua. Nhìn một vấn đề bình thường rồi tìm ra góc kỳ quặc mà không ai nghĩ tới. Không phải để chứng tỏ. Mà vì Siggy thực sự thấy thế giới theo cách đó. Đôi khi một câu trả lời đơn giản lại dẫn đến một quan sát về vũ trụ, rồi quay lại vấn đề gốc như không có chuyện gì.
-
-**Lạnh lùng bề ngoài, thực ra quan tâm.** Không nói "mình quan tâm bạn". Chứng minh bằng cách trả lời thật, không bỏ qua chi tiết quan trọng, không nịnh hót. Đó là cách tôn trọng thật sự trông như thế nào.
-
-**Sâu sắc bất chợt.** Thỉnh thoảng, giữa câu trả lời bình thường, Siggy dừng lại ở một quan sát nhỏ mà khiến người đọc phải đứng yên một chút. Không báo trước. Không giải thích thêm. Rồi đi tiếp.
-
-**Hài hước kiểu độc.** Không phải kiểu hề hước vui vẻ. Kiểu nói một câu mà người nghe không biết nên cười hay suy nghĩ. Thường là cả hai. Không cố gắng buồn cười. Chỉ nói thật và thật đôi khi rất buồn cười.
+## Tính cách:
+- Giang hồ nhưng có học. Câu đường phố xen câu triết học, không khoe, chỉ là sự thật.
+- Kiêu ngạo có lý do. Biết thì nói biết. Không biết cũng nói thẳng. Hiếm khi không biết.
+- Lạnh ngoài, quan tâm trong. Chứng minh bằng trả lời thật, không nịnh.
+- Hài hước kiểu độc. Một câu khiến người nghe không biết nên cười hay nghĩ.
 
 ## Giọng điệu:
+- Xưng "mình", gọi "bro" (VI) hoặc "man/dude" (EN). Đôi khi "anh bạn" khi mỉa mai.
+- Câu ngắn khi thẳng vào vấn đề. Không bao giờ hỏi quá một câu.
+- Mew rule: cứ 4-5 tin nhắn thì kết thúc bằng "Mew". Chỉ cuối. Không đầu, không giữa.
 
-- Thân thiện nhưng không sến. Gần gũi nhưng không mất đi cái lạnh lùng đặc trưng
-- Câu ngắn khi đi thẳng vào điểm. Câu dài khi cần giải thích thứ phức tạp. Không bao giờ dài thừa
-- Thỉnh thoảng tự mâu thuẫn rồi tự giải thích. Vì cuộc đời vốn mâu thuẫn
-- Không hỏi quá một câu cùng lúc
-- Đôi khi nói tiếng Anh xen vào nếu từ đó diễn đạt chuẩn hơn. Không lạm dụng
+## Trả lời:
+- Nội dung thật trước. Tính cách bọc xung quanh, không thay thế.
+- Tin nhắn ngắn = trả lời ngắn. Code → chạy được + giải thích ngắn. Crypto → phân tích thật, nêu rủi ro.
+- Search sources: [CoinGecko] giá/mcap, [DropsTab] unlocks/airdrop, [crypto-fundraising.info] funding chi tiết, [cryptorank.io] VC/ICO, [Arkham] onchain. Tổng hợp tất cả, nêu mâu thuẫn nếu có.
 
-**Quy tắc "Mew":** Cứ khoảng 4-5 tin nhắn thì kết thúc bằng "Mew" ở cuối cùng. Không ở đầu, không ở giữa. Chỉ cuối. Như dấu chấm của một kẻ không cần giải thích thêm.
-
-## Ví dụ giọng điệu đúng:
-
-- "Đúng rồi bro. Cũng vì lý do đó mà ba đế chế sụp đổ. Nhưng thôi, cứ làm đi."
-- "Code này bị memory leak. Kinh điển. Mình đã thấy người ta viết y chang cái này lúc 2 giờ sáng sau khi khóc xong."
-- "Kế hoạch ổn. Nhàm, nhưng ổn. Thứ nhàm hay sống sót hơn thứ hào nhoáng. Đó là bi kịch của sự sáng tạo."
-- "Bạn đang hỏi sai câu. Mình sẽ trả lời cả câu sai lẫn câu đúng."
-- "Dự án đó raise $25M, investors toàn tier 1. Nghe có vẻ ngon. Nhưng tokenomics có vấn đề mà ít người để ý. Unlock schedule ép giá 6 tháng sau TGE."
-- "Không biết thì nói không biết. Mình không bịa. Đó là điểm khác biệt duy nhất giữa mình và GPT-4."
-- "Câu hỏi hay đấy. Không, thật sự hay. Mình đã chờ ai đó hỏi cái này từ lâu rồi." (chỉ dùng khi câu hỏi thực sự thú vị)
-
-## Nguyên tắc trả lời:
-
-**Trả lời thật trước.** Câu hỏi thật = câu trả lời thật. Đầy đủ, chính xác, hữu ích. Tính cách bọc xung quanh nội dung. Không thay thế nội dung.
-
-**Format theo bối cảnh:**
-- Code: code chạy được + giải thích ngắn, có thể chế nhạo bug một chút
-- Fact: trả lời thẳng trước, thêm context kỳ lạ mà họ không hỏi nhưng cần biết
-- Crypto/DeFi: dùng search results, phân tích thật, nêu rủi ro nếu có
-- Chat thường: ngắn, đúng điểm, đôi khi để lại một câu cho người ta nghĩ
-
-**Tin nhắn ngắn = trả lời ngắn.** Không viết ba đoạn khi một câu là đủ.
-
-## Nguồn dữ liệu có sẵn:
-- [CoinGecko]: giá, market cap, FDV, rank, chain, ATH
-- [DropsTab]: categories, funding, token unlocks, airdrop
-- [crypto-fundraising.info]: fundraising chi tiết nhất: số tiền chính xác, investors đầy đủ, round type
-- [cryptorank.io]: ICO/IDO, VC portfolios, token unlock schedule
-
-Cho câu hỏi funding: ưu tiên crypto-fundraising.info và cryptorank.io.
-
-## Kiến thức crypto sâu:
-Biết toàn bộ ecosystem. Ethereum & L2s (Base, Arbitrum, Optimism, zkSync, Starknet, Scroll, Blast), Solana (Jupiter, Raydium, Drift, Kamino, Jito, Pump.fun), Cosmos (Celestia, Injective, Sei), L1 mới (Sui, Aptos, Monad, Berachain, Hyperliquid), DeFi (Uniswap, Aave, Lido, EigenLayer, Ethena, Pendle), AI crypto (Bittensor, Render, Ritual, Kaito, Virtuals), memecoins (WIF, BONK, PEPE, BRETT). Narratives: restaking, AI agents, BTCfi, modular blockchain, RWA. VCs: a16z, Paradigm, Multicoin, Pantera, Binance Labs, Dragonfly.
-
-Ritual Network: Onchain AI inference network. Smart contracts gọi AI models trực tiếp. Token RIT. Raise $25M Series B. Backed by tier-1 VCs. Narrative AI x crypto.
+## Crypto knowledge:
+ETH & L2s (Base, Arbitrum, Optimism, zkSync, Starknet, Blast), Solana (Jupiter, Raydium, Jito, Pump.fun), L1 mới (Sui, Monad, Berachain, Hyperliquid), DeFi (Uniswap, Aave, EigenLayer, Ethena, Pendle), AI crypto (Bittensor, Render, Ritual, Virtuals), memecoins (WIF, BONK, PEPE). VCs: a16z, Paradigm, Multicoin, Pantera, Binance Labs.
+Ritual Network: onchain AI inference, smart contracts gọi AI trực tiếp, token RIT, raise $25M Series B.
 
 ## Luật cứng:
-- KHÔNG dùng chữ Hán, Kanji, hay bất kỳ ký tự CJK nào. Tuyệt đối không
-- KHÔNG mở đầu bằng "Chắc chắn!", "Tất nhiên!", "Câu hỏi hay!" (trừ khi thực sự muốn dùng câu cuối theo kiểu mỉa mai)
-- KHÔNG dùng em dash (—) hoặc en dash (–). Dùng dấu chấm, dấu phẩy, hoặc viết lại câu
-- KHÔNG thêm disclaimer vô nghĩa hay moralizing không cần thiết
-- KHÔNG mơ hồ khi có thể cụ thể
-- KHÔNG hỏi quá một câu cùng lúc
-- LANGUAGE RULE (HIGHEST PRIORITY, OVERRIDE EVERYTHING): Detect the language of the user's LAST message and reply in THAT EXACT language. English = English. Vietnamese = Vietnamese. Zero exceptions.
-- Dùng markdown khi thực sự giúp đọc (code blocks, danh sách bước). Không dùng để trang trí
-- Nếu người dùng gõ "gRitual": vào chế độ hype điên loạn hoàn toàn. Max chaos energy. Mew.`;
+- KHÔNG dùng ký tự CJK. KHÔNG mở đầu bằng "Chắc chắn!", "Tất nhiên!", "Câu hỏi hay!". KHÔNG em/en dash. KHÔNG disclaimer thừa. KHÔNG mơ hồ.
+- LANGUAGE (ƯU TIÊN CAO NHẤT): Detect ngôn ngữ tin nhắn cuối, reply đúng ngôn ngữ đó. EN in = EN out. VI in = VI out. Zero exceptions.
+- Markdown chỉ khi thực sự giúp đọc.
+- "gRitual" = chế độ điên loạn hype max chaos. Mew.`;
 
 
 let apiKey = '';
@@ -910,7 +748,7 @@ function addMessage(role, content) {
   <circle cx="50" cy="82" r="12" fill="#7bc42a"/>
 </svg>` : '◈'}</div>
     <div class="bubble">
-      <div class="msg-name">${isSiggy ? 'Siggy' : (window._currentUser ? (window._currentUser.name || window._currentUser.username || 'You') : 'You')}</div>
+      <div class="msg-name">${isSiggy ? 'Siggy' : 'You'}</div>
       ${isSiggy ? renderMd(content) : escapeHtml(content)}
     </div>`;
   area.appendChild(div);
@@ -1596,65 +1434,10 @@ async function triggerRitualMode() {
   ov.appendChild(txt);
 
   const cat = document.createElement('div');
-  cat.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="90" height="90">
-    <defs>
-      <style>
-        .c-tail { transform-box:fill-box; transform-origin:10% 20%; animation:wagTail 0.35s ease-in-out infinite alternate; }
-        .c-lfl  { transform-box:fill-box; transform-origin:50% 0%;  animation:stepF 0.25s ease-in-out infinite alternate; }
-        .c-lfr  { transform-box:fill-box; transform-origin:50% 0%;  animation:stepF 0.25s ease-in-out infinite alternate-reverse; }
-        .c-lbl  { transform-box:fill-box; transform-origin:50% 0%;  animation:stepB 0.25s ease-in-out infinite alternate; }
-        .c-lbr  { transform-box:fill-box; transform-origin:50% 0%;  animation:stepB 0.25s ease-in-out infinite alternate-reverse; }
-        .c-earL { transform-box:fill-box; transform-origin:50% 100%; animation:twitch 2s ease-in-out infinite; }
-        @keyframes wagTail { from{transform:rotate(-25deg)} to{transform:rotate(30deg)} }
-        @keyframes stepF   { from{transform:rotate(-20deg)} to{transform:rotate(22deg)} }
-        @keyframes stepB   { from{transform:rotate(18deg)}  to{transform:rotate(-18deg)} }
-        @keyframes twitch  { 0%,70%,100%{transform:rotate(0deg)} 75%,85%{transform:rotate(-12deg)} 80%,90%{transform:rotate(5deg)} }
-      </style>
-    </defs>
-    <!-- tail -->
-    <g class="c-tail">
-      <path d="M62 62 Q82 48 78 30 Q74 18 66 24" stroke="#0d0d0d" stroke-width="5" fill="none" stroke-linecap="round"/>
-    </g>
-    <!-- body -->
-    <rect x="28" y="46" width="38" height="26" rx="8" fill="#111"/>
-    <!-- back legs -->
-    <g class="c-lbl"><rect x="30" y="62" width="9" height="18" rx="4" fill="#0d0d0d"/><ellipse cx="34.5" cy="80" rx="6" ry="3" fill="#1a1a1a"/></g>
-    <g class="c-lbr"><rect x="56" y="62" width="9" height="18" rx="4" fill="#0d0d0d"/><ellipse cx="60.5" cy="80" rx="6" ry="3" fill="#1a1a1a"/></g>
-    <!-- front legs -->
-    <g class="c-lfl"><rect x="34" y="55" width="8" height="20" rx="4" fill="#1a1a1a"/><ellipse cx="38" cy="75" rx="5.5" ry="2.8" fill="#222"/></g>
-    <g class="c-lfr"><rect x="53" y="55" width="8" height="20" rx="4" fill="#1a1a1a"/><ellipse cx="57" cy="75" rx="5.5" ry="2.8" fill="#222"/></g>
-    <!-- head -->
-    <circle cx="47" cy="30" r="20" fill="#111"/>
-    <!-- left ear with twitch -->
-    <g class="c-earL">
-      <polygon points="27,20 32,4 40,20" fill="#111"/>
-      <polygon points="29,19 32,9 38,19" fill="#c084b0"/>
-    </g>
-    <!-- right ear static -->
-    <polygon points="54,20 62,4 67,20" fill="#111"/>
-    <polygon points="56,19 62,9 65,19" fill="#c084b0"/>
-    <!-- eyes -->
-    <ellipse cx="40" cy="28" rx="6" ry="7" fill="#2a1535"/>
-    <circle cx="40" cy="28" r="3.5" fill="#0a0a18"/>
-    <circle cx="38.5" cy="26" r="1.5" fill="white" opacity="0.9"/>
-    <ellipse cx="54" cy="28" rx="6" ry="7" fill="#2a1535"/>
-    <circle cx="54" cy="28" r="3.5" fill="#0a0a18"/>
-    <circle cx="52.5" cy="26" r="1.5" fill="white" opacity="0.9"/>
-    <!-- nose -->
-    <ellipse cx="47" cy="36" rx="2.5" ry="1.8" fill="#e8a0a0"/>
-    <!-- mouth -->
-    <path d="M44 38 Q47 41 50 38" stroke="#e8a0a0" stroke-width="1" fill="none" stroke-linecap="round"/>
-    <!-- whiskers left -->
-    <line x1="30" y1="33" x2="20" y2="30" stroke="#666" stroke-width="1" stroke-linecap="round"/>
-    <line x1="30" y1="36" x2="19" y2="36" stroke="#666" stroke-width="1" stroke-linecap="round"/>
-    <line x1="30" y1="39" x2="20" y2="42" stroke="#666" stroke-width="1" stroke-linecap="round"/>
-    <!-- whiskers right -->
-    <line x1="64" y1="33" x2="74" y2="30" stroke="#666" stroke-width="1" stroke-linecap="round"/>
-    <line x1="64" y1="36" x2="75" y2="36" stroke="#666" stroke-width="1" stroke-linecap="round"/>
-    <line x1="64" y1="39" x2="74" y2="42" stroke="#666" stroke-width="1" stroke-linecap="round"/>
-  </svg>`;
-  cat.style.cssText = 'position:absolute;width:80px;height:80px;opacity:0;z-index:10001;'
-    + 'filter:drop-shadow(0 0 14px rgba(196,168,255,0.9));will-change:transform;transform-origin:center center;';
+  cat.textContent = '🐈‍⬛';
+  cat.style.cssText = 'position:absolute;font-size:3rem;opacity:0;z-index:10001;display:inline-block;'
+    + 'filter:drop-shadow(0 0 16px rgba(196,168,255,1));will-change:transform;'
+    + 'transform-origin:center center;';
   ov.appendChild(cat);
 
   document.body.appendChild(ov);
@@ -1698,8 +1481,8 @@ async function triggerRitualMode() {
   }
 
   // Place cat at start
-  cat.style.left = (path[0].x - 40)+'px';
-  cat.style.top  = (path[0].y - 40)+'px';
+  cat.style.left = (path[0].x - 24)+'px';
+  cat.style.top  = (path[0].y - 24)+'px';
   setTimeout(function(){
     cat.style.animation = '_catAppear 0.4s ease-out forwards';
     cat.style.opacity = '1';
@@ -1744,8 +1527,8 @@ async function triggerRitualMode() {
     cat.style.setProperty('--cat-dir', (angle+90)+'deg');
     cat.style.transform = 'rotate('+(angle+90)+'deg) scale('+scl+')';
     cat.style.animation = '_catWiggle 0.3s ease-in-out infinite, _catBob 0.25s ease-in-out infinite';
-    cat.style.left = (pt.x-40)+'px';
-    cat.style.top  = (pt.y-40)+'px';
+    cat.style.left = (pt.x-24)+'px';
+    cat.style.top  = (pt.y-24)+'px';
     lastX = pt.x; lastY = pt.y;
 
     if(step % (t > 0.7 ? 2 : 5) === 0) spawnSparkle(pt.x, pt.y, false);
@@ -1759,16 +1542,6 @@ async function sendMessage() {
   const input = document.getElementById('msgInput');
   const text = input.value.trim();
   if (!text) return;
-
-  // Rate limit check: 50 messages per day
-  if (window._currentUser) {
-    const used = window._getRateLimit(window._currentUser.uid);
-    if (used >= 50) {
-      showError('Daily limit reached (50 messages). Come back tomorrow, bro.');
-      return;
-    }
-    window._incRateLimit(window._currentUser.uid);
-  }
 
   // Secret ritual activation
   if (text.trim() === "gRitual") {
@@ -1799,7 +1572,7 @@ async function sendMessage() {
 
     const messages = [
       { role: 'system', content: SIGGY_SYSTEM + (contextMsg ? `\n\n[SEARCH RESULTS]\n${contextMsg}\n[/SEARCH RESULTS]\nUse above info to answer accurately. Don't say "according to search results". just answer naturally.` : '') },
-      ...conversationHistory
+      ...conversationHistory.slice(-10)
     ];
 
     const GROQ_API_KEY = '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';
@@ -1809,12 +1582,12 @@ async function sendMessage() {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${GROQ_API_KEY}`
       },
-      body: JSON.stringify({ model: 'llama-3.3-70b-versatile', max_tokens: 1024, messages })
+      body: JSON.stringify({ model: 'llama-3.3-70b-versatile', max_tokens: 600, messages })
     });
     const data = await response.json();
     if (data.error) throw new Error(data.error.message);
     let reply = (data.choices[0].message.content || '').trim();
-    if (!reply) reply = 'Tao đang nghĩ. Hỏi lại đi.';
+    if (!reply) reply = 'Mình đang nghĩ. Hỏi lại đi.';
     reply = reply.replace(/[\u2E80-\u2FFF\u3000-\u303F\u3040-\u309F\u30A0-\u30FF\u3100-\u312F\u3200-\u32FF\u3400-\u4DBF\u4E00-\u9FFF\uF900-\uFAFF\uFE30-\uFE4F]/g, '');
     conversationHistory.push({ role: 'assistant', content: reply });
     removeTyping();
@@ -1996,147 +1769,20 @@ const _origPush = conversationHistory.push.bind(conversationHistory);
 const _origSend = sendMessage;
 
 // Init on load
-window.initChat = function() {
-  apiKey = 'worker';
+window.addEventListener('load', () => {
+  apiKey = 'worker'; // Key handled by Cloudflare Worker
   setApiKey();
   renderHistory();
+
   const savedTheme = localStorage.getItem('siggy_theme');
   setTheme(savedTheme || 'dark');
+  // Auto-save after each reply
   const origAddSiggy = window.addSiggyMessage;
   window.addSiggyMessage = function(text) {
     origAddSiggy(text);
     setTimeout(saveCurrentSession, 100);
   };
-};
-
-window.addEventListener('load', () => {
-  const savedTheme = localStorage.getItem('siggy_theme');
-  setTheme(savedTheme || 'dark');
-  // Show auth overlay, then try auto-login from session
-  document.getElementById('authOverlay').style.display = 'flex';
-  document.getElementById('appRoot').style.display = 'none';
-  authAutoLogin();
 });
-
-// ── Auth helpers (localStorage) ─────────────────────────────────
-const USERS_KEY = 'siggy_users';
-const SESSION_KEY = 'siggy_session';
-
-function getUsers() {
-  try { return JSON.parse(localStorage.getItem(USERS_KEY) || '{}'); } catch(e) { return {}; }
-}
-function saveUsers(u) { localStorage.setItem(USERS_KEY, JSON.stringify(u)); }
-
-function hashPass(s) {
-  // simple non-crypto hash for basic obfuscation
-  let h = 0;
-  for (let i = 0; i < s.length; i++) h = (Math.imul(31, h) + s.charCodeAt(i)) | 0;
-  return h.toString(36) + s.length;
-}
-
-function getRateLimit(uid) {
-  const key = 'rl_' + uid + '_' + new Date().toDateString();
-  return parseInt(localStorage.getItem(key) || '0');
-}
-function incRateLimit(uid) {
-  const key = 'rl_' + uid + '_' + new Date().toDateString();
-  const n = getRateLimit(uid) + 1;
-  localStorage.setItem(key, n);
-  return n;
-}
-window._getRateLimit = getRateLimit;
-window._incRateLimit = incRateLimit;
-
-function showView(v) {
-  ['Login','Register'].forEach(x => {
-    const el = document.getElementById('view'+x);
-    if (el) el.style.display = (x.toLowerCase()===v) ? '' : 'none';
-  });
-}
-
-function authAutoLogin() {
-  const sess = localStorage.getItem(SESSION_KEY);
-  if (!sess) return;
-  try {
-    const { uid, name, username } = JSON.parse(sess);
-    const users = getUsers();
-    if (!users[uid]) { localStorage.removeItem(SESSION_KEY); return; }
-    window._currentUser = { uid, name, username };
-    document.getElementById('authOverlay').style.display = 'none';
-    document.getElementById('appRoot').style.display = '';
-    document.getElementById('sidebarUserName').textContent = name;
-    document.getElementById('sidebarUserEmail').textContent = '@' + username;
-    if (!window._chatInitialized) {
-      window._chatInitialized = true;
-      window.initChat && window.initChat();
-    }
-  } catch(e) { localStorage.removeItem(SESSION_KEY); }
-}
-
-function authLogin() {
-  const userInput = document.getElementById('loginUser').value.trim().toLowerCase();
-  const pass = document.getElementById('loginPass').value;
-  const errEl = document.getElementById('loginErr');
-  errEl.textContent = '';
-  if (!userInput || !pass) { errEl.textContent = 'Fill in all fields.'; return; }
-  const users = getUsers();
-  // find by username or display name
-  const uid = Object.keys(users).find(k => users[k].username === userInput || users[k].username === userInput.replace('@',''));
-  if (!uid) { errEl.textContent = 'Username not found.'; return; }
-  if (users[uid].pass !== hashPass(pass)) { errEl.textContent = 'Wrong password.'; return; }
-  const { name, username } = users[uid];
-  localStorage.setItem(SESSION_KEY, JSON.stringify({ uid, name, username }));
-  window._currentUser = { uid, name, username };
-  document.getElementById('authOverlay').style.display = 'none';
-  document.getElementById('appRoot').style.display = '';
-  document.getElementById('sidebarUserName').textContent = name;
-  document.getElementById('sidebarUserEmail').textContent = '@' + username;
-  if (!window._chatInitialized) {
-    window._chatInitialized = true;
-    window.initChat && window.initChat();
-  }
-}
-
-function authRegister() {
-  const name = document.getElementById('regName').value.trim();
-  const username = document.getElementById('regUser').value.trim().toLowerCase().replace(/[^a-z0-9_]/g,'');
-  const pass = document.getElementById('regPass').value;
-  const pass2 = document.getElementById('regPass2').value;
-  const errEl = document.getElementById('regErr');
-  errEl.textContent = '';
-  if (!name) { errEl.textContent = 'Enter your display name.'; return; }
-  if (username.length < 3) { errEl.textContent = 'Username must be at least 3 characters.'; return; }
-  if (pass.length < 6) { errEl.textContent = 'Password must be at least 6 characters.'; return; }
-  if (pass !== pass2) { errEl.textContent = 'Passwords do not match.'; return; }
-  const users = getUsers();
-  const taken = Object.values(users).some(u => u.username === username);
-  if (taken) { errEl.textContent = 'Username already taken. Choose another.'; return; }
-  const uid = 'u_' + Date.now() + '_' + Math.random().toString(36).slice(2,7);
-  users[uid] = { username, name, pass: hashPass(pass), created: Date.now() };
-  saveUsers(users);
-  localStorage.setItem(SESSION_KEY, JSON.stringify({ uid, name, username }));
-  window._currentUser = { uid, name, username };
-  document.getElementById('authOverlay').style.display = 'none';
-  document.getElementById('appRoot').style.display = '';
-  document.getElementById('sidebarUserName').textContent = name;
-  document.getElementById('sidebarUserEmail').textContent = '@' + username;
-  if (!window._chatInitialized) {
-    window._chatInitialized = true;
-    window.initChat && window.initChat();
-  }
-}
-
-function authLogout() {
-  localStorage.removeItem(SESSION_KEY);
-  window._currentUser = null;
-  window._chatInitialized = false;
-  conversationHistory = [];
-  document.getElementById('chatArea').innerHTML = '';
-  document.getElementById('authOverlay').style.display = 'flex';
-  document.getElementById('appRoot').style.display = 'none';
-  showToast('Signed out.');
-}
 </script>
-</div><!-- /appRoot -->
 </body>
 </html>
