@@ -1119,7 +1119,7 @@ async function checkNeedsSearch(query) {
 
   // 3. Use fast AI classifier to decide
   try {
-    const GROQ_API_KEY = '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';
+    const GROQ_API_KEY = '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';
     const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + GROQ_API_KEY },
@@ -1575,7 +1575,7 @@ async function sendMessage() {
       ...conversationHistory.slice(-10)
     ];
 
-    const GROQ_API_KEY = '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';
+    const GROQ_API_KEY = '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';
     const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
       method: 'POST',
       headers: {
